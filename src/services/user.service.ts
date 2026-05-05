@@ -30,12 +30,25 @@ const createUser = async (userBody: any): Promise<User> => {
  * @returns {Promise<QueryResult>}
  */
 const queryUsers = async (filter: any, options: any) => {
-  const users = await prisma.user.findMany({
-    where: filter,
-    skip: options.skip,
-    take: options.take,
-  });
-  return users;
+  const { limit = 10, page = 1 } = options;
+  const skip = (page - 1) * limit;
+
+  const [users, totalResults] = await Promise.all([
+    prisma.user.findMany({
+      where: filter,
+      skip: Number(skip),
+      take: Number(limit),
+    }),
+    prisma.user.count({ where: filter }),
+  ]);
+
+  return {
+    results: users,
+    page: Number(page),
+    limit: Number(limit),
+    totalPages: Math.ceil(totalResults / limit),
+    totalResults,
+  };
 };
 
 /**

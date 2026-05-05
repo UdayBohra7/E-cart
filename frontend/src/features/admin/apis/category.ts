@@ -1,32 +1,33 @@
 import { axios } from '@/lib/axios';
 
-export interface Category {
-    _id: string;
-    name: string;
-    description: string;
-    isDeleted: boolean;
-    createdAt?: string;
-    updatedAt?: string;
-}
+const transformCategory = (category: any) => ({
+    ...category,
+    _id: category.id.toString(),
+});
 
-type ApiResponse<T> = {
-    code: number;
-    message: string;
-    data: T;
+export const createCategory = async (data: any) => {
+    const response = await axios.post(`/categories`, data);
+    return transformCategory(response);
 };
 
-export const getCategories = (): Promise<ApiResponse<Category[]>> => {
-    return axios.get('/categories');
+export const getCategoryById = async (id: string) => {
+    const response = await axios.get(`/categories/${id}`);
+    return transformCategory(response);
 };
 
-export const getCategoryById = (id: string): Promise<ApiResponse<Category>> => {
-    return axios.get(`/categories/${id}`);
+export const updateCategory = async (id: string, data: any) => {
+    const response = await axios.patch(`/categories/${id}`, data);
+    return transformCategory(response);
 };
 
-export const createCategory = (data: { name: string }): Promise<ApiResponse<Category>> => {
-    return axios.post('/categories', data);
+export const deleteCategory = async (id: string) => {
+    return axios.delete(`/categories/${id}`);
 };
 
-export const updateCategory = (id: string, data: { name: string }): Promise<ApiResponse<Category>> => {
-    return axios.put(`/categories/${id}`, data);
+export const getCategories = async (params: any) => {
+    const response: any = await axios.get(`/categories`, { params });
+    return {
+        ...response,
+        results: response.results.map(transformCategory),
+    };
 };
