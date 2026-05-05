@@ -1,0 +1,476 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=EB+Garamond:ital,wght@0,400..800;1,400..800&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Noto+Serif+Display:ital,wght@0,100..900;1,100..900&family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Play:wght@400;700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap");
+@import "tailwindcss";
+
+:root {
+  --grey: #e9ecef;
+  --bgbox: #eef2f7;
+  --red: #ff504a;
+  --green: #00951b;
+  --gray: #5d7186;
+  --txt: #313B5E;
+  --light: #EB9AA8;
+}
+.light{
+  color: var(--light);
+}
+.txt{
+  color: var(--txt);
+}
+.red {
+  color: var(--red);
+}
+.graybg {
+  background-color: var(--bgbox);
+}
+.grey {
+  color: var(--gray);
+}
+.green {
+  color: var(--green);
+}
+.f-30 {
+  font-size: 30px;
+}
+.f-34 {
+  font-size: 34px;
+}
+.f-24 {
+  font-size: 24px;
+}
+.f-20 {
+  font-size: 20px;
+}
+.f-14 {
+  font-size: 14px;
+}
+.f-16 {
+  font-size: 16px;
+}
+.semi-bold {
+  font-weight: 600;
+}
+.bold {
+  font-weight: 700;
+}
+button.btn.border-btn {
+  border: 1px solid #5D7186;
+  color: #5D7186 !important;
+  background: transparent;
+  font-size: 14px;
+  /* padding: 10px 20px; */
+}
+.text-strike {
+  text-decoration: line-through;
+}
+.bggrey {
+  background-color: var(--grey);
+}
+.h-100vh {
+  height: 100vh;
+}
+label.form-label {
+  font-weight: 500;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+.login-form .form-control,
+.forgot-form .form-control {
+  border: 1px solid #ddd;
+  padding: 12px;
+}
+.login-img img {
+  height: 78vh;
+  object-fit: contain;
+}
+.login-form {
+  height: 100vh;
+  overflow-y: auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.uppercase {
+  text-transform: uppercase;
+}
+.forgotcard {
+  max-width: 60%;
+  margin: 0 auto;
+}
+.otp-input > div {
+  justify-content: center;
+  gap: 35px;
+}
+.otp-input input {
+  border: 1px solid #ddd;
+  padding: 10px;
+  height: 60px;
+  width: 60px !important;
+  border-radius: 10px;
+}
+main {
+  background-color: #f9f7f7;
+}
+.header-bar header.MuiPaper-root {
+  box-shadow: none !important;
+  background: transparent;
+}
+.bottom-order {
+  border-radius: 0 0 10px 10px;
+}
+.table-card {
+  box-shadow: 0px 3px 4px 0px #00000008;
+  background-color: #fff;
+  border-radius: 15px;
+}
+button.light-btn {
+  background: #ff6c2f1a;
+  color: #eb9aa8 !important;
+  gap: 5px;
+  border: none !important;
+  padding: 10px 30px;
+  border-radius: 10px;
+}
+.table-admin table th {
+  background: #eef2f780;
+  border-bottom: 1px solid #eaedf1;
+  color: #5d7186;
+  font-size: 14px;
+  padding: 15px 20px;
+}
+button.user-tb-btn {
+    background: transparent;
+    border: none;
+    color: #313B5E !important;
+    font-weight: 600;
+}
+button.user-tb-btn.active {
+    background: transparent;
+    border-bottom: 4px solid #EB9AA8;
+}
+.table-admin table tbody td {
+  color: #5d7186 !important;
+  font-size: 14px;
+  padding: 15px 20px;
+}
+.f-16 {
+  font-size: 14px;
+}
+.detail-card {
+  background: #fff;
+  box-shadow: 0px 3px 4px 0px #00000008;
+  border-radius: 12px;
+}
+.customer-title, .lisitng-type {
+  background: #EEF2F780;
+  border-bottom: 1px solid #D8DFE7;
+  padding: 10px 20px;
+  border-radius: 12px 12px 0 0;
+}
+.listing-btns {
+  background: #EEF2F7;
+  padding: 20px;
+  border-radius: 12px;
+  margin-top: 30px;
+}
+.add-box {
+  padding: 20px;
+}
+.add-box label.form-label {
+  color: #5D7186;
+  font-size: 14px;
+}
+.add-box .form-control {
+  border: 1px solid #D8DFE7;
+  padding: 6px 10px;
+}
+.phone-control.PhoneInput {
+  display: flex;
+}
+p.info-txt {
+  padding: 4px 0;
+}
+button.btn.btn-primary.light-btn:hover {
+  color: #fff !important;
+}
+select.admin-select {
+  border: 1px solid #dee2e6;
+  font-size: 14px;
+  padding: 10px;
+  border-radius: 6px;
+}
+.w-max{
+  width: max-content;
+}
+.select-role .input-box > div > div {
+  z-index: 99999;
+}
+.permission-table th {
+  color: #313B5E;
+  font-size: 16px;
+  font-weight: 500;
+  border-bottom: 1px solid #EAEDF1;
+  padding: 10px;
+}
+.permission-table td {
+  color: #313B5E;
+  font-size: 16px;
+  padding: 10px;
+}
+.Mui-checked span.MuiSwitch-thumb {
+  background-color: #16DBCC;
+}
+html body .MuiSwitch-root .Mui-checked+.MuiSwitch-track {
+  background-color: #9ba6ae;
+}
+.cocktail {
+  background: #FBB9C6;
+  padding: 3px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+img.cock-icon {
+  height: 80px;
+  object-fit: contain;
+}
+.cocktail.wedding {
+  background: linear-gradient(0deg, #F7D4CC 0%, #EAB4A7 100%);
+}
+.cocktail.bridal {
+  background: #FEF1D6;
+}
+.cocktail.party {
+  background: #FFD8E1;
+}
+.table-admin {
+  width: 100%;
+  overflow-y: scroll;
+}
+.color-input span {
+  width: 100%;
+}
+.add-box textarea {
+  border-radius: 10px;
+  padding: 10px;
+  border: 1px solid #dee2e6;
+}
+.shipment-options label.MuiFormControlLabel-root {
+  border: 1px solid #7A747E;
+  padding: 2px 10px;
+  border-radius: 10px;
+}
+.dropbox.text-center {
+  border: 2px dashed #D8DFE7;
+  border-radius: 12px;
+  padding: 30px;
+}
+.content-table .table-admin table th {
+  background: #FFEBEF;
+}
+.trackied-content .track-cnt {
+  width: 18%;
+}
+.yellow {
+  color: #F9B931;
+}
+.estimate-dte {
+  border: 1px solid #EAEDF1;
+  background: #F9F7F7;
+  padding: 10px 20px;
+  border-radius: 25px;
+}
+.order-details .orders-box {
+  box-shadow: 0px 3px 4px 0px #00000008;
+}
+img.master-card {
+  height: 60px;
+  width: 60px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.orders-box.lender-details {
+  display: grid;
+  gap: 15px;
+  grid-template-columns: repeat(4, 1fr);
+}
+.border-right {
+  border-right: 1px solid #EAEDF1;
+}
+.lender-box-details {
+  padding-right: 10px;
+}
+.order-summary-content span.grey {
+  word-break: break-word;
+  padding-left: 14px;
+}
+.product-image-list {
+  height: 140px !important;
+  width: auto;
+  object-fit: contain;
+}
+.list-product-col {
+  border: 1px dashed #ddd;
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+}
+.list-product-col button img {
+  height: 21px;
+}
+.occasion .input-box > div > div {
+
+  z-index: 99;
+}
+.list-product-col button {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+.list-product-col img {
+margin:  0 auto;
+}
+.paid-status {
+  color: #00951B;
+  background-color: #D3F3DF;
+  border-radius: 8px;
+  font-size: 13px;
+  padding: 4px 12px;
+}
+.order-timeline:nth-child(3) .timeline-left-side, .order-timeline:nth-child(4) .timeline-left-side {
+  align-items: center !important;
+}
+button.send-invoice {
+  background: #EEF2F7;
+  border: 1px solid #EEF2F7;
+  color: #000 !important;
+  padding: 10px 15px;
+  line-height: normal;
+}
+button.send-invoice.down {
+  background: #9C9C9C;
+  background: #9C9C9C;
+  color: #fff !important;
+}
+.order-timeline::after {
+  content: "";
+  border: 1px solid #EAEDF1;
+  position: absolute;
+  left: 16px;
+  height: 100%;
+  width: 2px;
+  top: 2px;
+  display: block;
+}
+.timeline-img {
+  position: relative;
+  z-index: 9;
+}
+.relative{
+  position: relative;
+}
+.filter-btn {
+  border: 1px solid #E4E4E7;
+  width: max-content;
+  padding: 7px 12px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.uppercase{
+  text-transform: uppercase;
+}
+.w-max{
+  width: max-content !important;
+}
+li.ps-menuitem-root.ps-active::before {
+  content: "";
+  background: #eb9aa8;
+  height: 89%;
+  width: 2px;
+  position: absolute;
+  left: 0;
+  top: 4px;
+}
+img.menu-icon {
+  filter: brightness(0.2) invert(1);
+}
+li.ps-menuitem-root.ps-active img.menu-icon  {
+  filter: none;
+}
+.week-cust-icon {
+  border-radius: 100%;
+  object-fit: cover;
+}
+span.completed-paymt {
+  background: #DCFCE7;
+  border-radius: 30px;
+  padding: 8px 20px;
+  color: #14532D;
+  font-weight: 600;
+}
+.table-reports td {
+  padding: 10px;
+  border-bottom: 1px solid #dee2e6;
+}
+.confirm-del .MuiPaper-root {
+  border-radius: 20px;
+  padding: 20px;
+}
+.right-track button {
+  line-height: normal;
+  padding: 8px 10px;
+  font-size: 14px;
+  border: 1px solid;
+}
+.table-admin.product-order-tb tr td:nth-child(3) {
+    min-width: 130px;
+}
+.f-13{
+  font-size: 13px;
+}
+.answer-area  .input-box{
+  height: auto !important;
+}
+.was-validated .form-control:invalid, .form-control.is-invalid {
+  background-image: none !important;
+}
+img.table-view {
+  height: auto;
+  min-width: 30px;
+  width: 30px;
+}
+.status-define {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 7px;
+}
+img.fashion-icon {
+  height: 50px;
+  width: 50px;
+  border-radius: 10px;
+  object-fit: contain;
+}
+input.pro-upload {
+  height: 114px;
+  width: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.upload-container p {
+  color: #A098AE;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  top: 38%;
+}
+.w-max{
+  width: max-content;
+}
+@media(max-width: 1380px){
+  .trackied-content .track-cnt {
+    width: 30%;
+}
+}
