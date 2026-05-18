@@ -8,16 +8,15 @@ import { TotalCustomer } from "./Charts/TotalCustomer";
 import { RevenueChart } from "./Charts/RevenueChart";
 import Table from "@/components/Elements/Table/Table";
 import { useEffect, useState } from "react";
-// import { getStats } from "../apis/stats/getStats";
-import { getRecentProducts } from "../apis/products/getRecentProducts";
-import { getDashboardStats } from "../apis/reports";
-import { useRevenueChart } from "../apis/dashboard/revenueQuery";
 import { useNavigate } from "react-router-dom";
-import { Order } from "../apis/order";
-import { getOrderStatusStyle } from "./Orders/style";
-
-
-export const Dashboard = () => {
+const getOrderStatusStyle = (status: string) => {
+  switch (status?.toLowerCase()) {
+    case 'delivered': return { backgroundColor: '#d4edda', color: '#155724' };
+    case 'pending': return { backgroundColor: '#fff3cd', color: '#856404' };
+    case 'cancelled': return { backgroundColor: '#f8d7da', color: '#721c24' };
+    default: return { backgroundColor: '#e2e3e5', color: '#383d41' };
+  }
+};export const Dashboard = () => {
   const navigate = useNavigate();
   const [stats, setStats] = useState({
     totalOrders: 0,
@@ -33,17 +32,27 @@ export const Dashboard = () => {
   const [recentProducts, setRecentProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [duration, setDuration] = useState("1y");
-  const { isLoading: revenueChartLoading, data: revenueChart } = useRevenueChart({ duration })
+  
+  // Static replacements for missing APIs
+  const revenueChartLoading = false;
+  const revenueChart = { data: { year: new Date().getFullYear(), data: [], labels: [] } };
 
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const [statsResponse, productsResponse] = await Promise.all([
-          getDashboardStats(),
-          getRecentProducts()
-        ]);
-        setStats(statsResponse || []);
-        setRecentProducts(productsResponse?.results || []);
+        // APIs not yet created in backend
+        setStats({
+          totalOrders: 0,
+          totalBookings: 0,
+          totalUsers: 0,
+          totalRevenue: 0,
+          orderPercentage: 0,
+          revenuePercentage: 0,
+          usersPercentage: 0,
+          bookingPercentage: 0,
+          totalRegisterUserLastMonthPercentage: 0
+        });
+        setRecentProducts([]);
       } finally {
         setLoading(false);
       }
@@ -58,32 +67,32 @@ export const Dashboard = () => {
     {
       header: "Order ID",
       id: "orderId",
-      cell: (row: Order) => row._id,
+      cell: (row: any) => row._id,
     },
     {
       header: "Product",
       id: "product",
-      cell: (row: Order) => row.product_details?.name || 'N/A',
+      cell: (row: any) => row.product_details?.name || 'N/A',
     },
     {
       header: "Customer",
       id: "customer",
-      cell: (row: Order) => row.buyer_details?.name || 'N/A',
+      cell: (row: any) => row.buyer_details?.name || 'N/A',
     },
     {
       header: "Email ID",
       id: "email",
-      cell: (row: Order) => row.buyer_details?.email,
+      cell: (row: any) => row.buyer_details?.email,
     },
     {
       header: "Amount",
       id: "amount",
-      cell: (row: Order) => `$${row.totalAmount}`,
+      cell: (row: any) => `$${row.totalAmount}`,
     },
     {
       id: "status",
       header: "Order Status",
-      cell: (row: Order) => (
+      cell: (row: any) => (
         <div
           className="order-status py-2 text-center px-4 rounded-lg"
           style={getOrderStatusStyle(row.status)}

@@ -26,7 +26,6 @@ import {
 } from "@mui/material";
 import React from "react";
 import moment from "moment";
-import { usePermission } from "@/hooks/usePermission";
 
 
 export const ProductsList = () => {
@@ -38,10 +37,7 @@ export const ProductsList = () => {
   const [open, setOpen] = React.useState(false);
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("md"));
-  const { hasPermission } = usePermission();
-
   const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
-  const [filterType, setFilterType] = useState<'all' | 'admin' | 'user'>('all');
 
   const handleClose = () => {
     setOpen(false);
@@ -53,8 +49,6 @@ export const ProductsList = () => {
         page: currentPage,
         limit: 10,
         search: debouncedSearchQuery,
-        ...(filterType === 'admin' && { isCreatedByAdmin: true }),
-        ...(filterType === 'user' && { isCreatedByAdmin: false }),
       });
       setProducts(response.data.results);
     } catch (error) {
@@ -89,7 +83,7 @@ export const ProductsList = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [debouncedSearchQuery, currentPage, filterType]);
+  }, [debouncedSearchQuery, currentPage]);
 
   const columns = [
     {
@@ -100,7 +94,6 @@ export const ProductsList = () => {
           <img src={row.images?.[0] || fashion} className="fashion-icon" />
           <div className="prodt-details">
             <h5 className="font-medium f-16 mb-0">{row.name}</h5>
-            <p className="f-14 mb-0 gray">Owner: {row.owner?.name || "N/A"}</p>
           </div>
         </div>
       ),
@@ -150,25 +143,21 @@ export const ProductsList = () => {
           >
             <img src={view} className="table-view" />
           </Link>
-          {hasPermission("product", "update") && (
-            <Link
-              to={`/admin/products/${row._id}/edit`}
-              className="border-0 bg-transparent p-0"
-            >
-              <img src={edit} className="table-view" />
-            </Link>
-          )}
-          {hasPermission("product", "delete") && (
-            <button
-              onClick={() => {
-                setSelectedProduct(row?._id);
-                setOpen(true);
-              }}
-              className="border-0 bg-transparent p-0"
-            >
-              <img src={dele} className="table-view" />
-            </button>
-          )}
+          <Link
+            to={`/admin/products/${row._id}/edit`}
+            className="border-0 bg-transparent p-0"
+          >
+            <img src={edit} className="table-view" />
+          </Link>
+          <button
+            onClick={() => {
+              setSelectedProduct(row?._id);
+              setOpen(true);
+            }}
+            className="border-0 bg-transparent p-0"
+          >
+            <img src={dele} className="table-view" />
+          </button>
         </div>
       ),
     },
@@ -256,35 +245,12 @@ export const ProductsList = () => {
               All Products List ({loading ? "..." : products.length})
             </h4>
             <div className="d-flex gap-2 align-items-center">
-              {hasPermission("product", "create") && (
-                <Link to="/admin/list-a-product">
-                  <Button>List Product</Button>
-                </Link>
-              )}
+              <Link to="/admin/list-a-product">
+                <Button>List Product</Button>
+              </Link>
             </div>
           </div>
-          <div className="px-3 pb-3">
-            <div className="d-flex gap-2">
-              <Button
-                className={`${filterType === 'all' ? 'pink-btn' : 'border-btn'}`}
-                onClick={() => { setFilterType('all'); setCurrentPage(1); }}
-              >
-                All Products
-              </Button>
-              <Button
-                className={`${filterType === 'admin' ? 'pink-btn' : 'border-btn'}`}
-                onClick={() => { setFilterType('admin'); setCurrentPage(1); }}
-              >
-                Admin Products
-              </Button>
-              <Button
-                className={`${filterType === 'user' ? 'pink-btn' : 'border-btn'}`}
-                onClick={() => { setFilterType('user'); setCurrentPage(1); }}
-              >
-                User Products
-              </Button>
-            </div>
-          </div>
+
           <div className="table-admin">
             <Table
               setCurrentPage={setCurrentPage}

@@ -18,7 +18,7 @@ export const ViewUser = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
-      const { data } = await getUserById(id || "");
+      const data = await getUserById(id || "");
       setUserDetails(data);
     } catch (error) {
       console.error('Error fetching user:', error);

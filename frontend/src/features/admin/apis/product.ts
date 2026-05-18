@@ -1,5 +1,5 @@
 import { axios } from '@/lib/axios';
-
+export type Product = any;
 const transformProduct = (product: any) => ({
     ...product,
     _id: product.id.toString(),

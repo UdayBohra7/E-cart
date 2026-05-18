@@ -23,7 +23,6 @@ import {
 } from "@mui/material";
 import { addNewProduct } from "../../apis/products/createProduct";
 import { toast } from "sonner";
-import { getOccasions } from "../../apis/occassions/getOccassions";
 import { AddEditProductForm } from "./AddEditProductForm";
 
 // export const variantSchema = z

@@ -12,9 +12,7 @@ import upload from "@/assets/upload.svg";
 import { TextareaAutosize } from "@mui/material";
 import { addNewProduct } from "../../apis/products/createProduct";
 import { toast } from "sonner";
-import { getOccasions } from "../../apis/occassions/getOccassions";
 import { updateProduct } from "../../apis/product";
-import { getPlatformSettings } from "../../apis/platform-settings";
 import { FormControlLabel, Checkbox } from "@mui/material";
 
 export const variantSchema = z
@@ -491,34 +489,9 @@ export const AddEditProductForm = ({ isEdit = false, data }: Props) => {
       console.error("Error fetching categories:", error);
     }
   };
-  const fetchOccasions = async () => {
-    try {
-      const res = await getOccasions();
-      const data = res.map((ele: any) => ({
-        label: ele?.title,
-        value: ele?._id,
-      }));
-      setOccasions(data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
   useEffect(() => {
     fetchCategories();
-    fetchOccasions();
-    fetchPlatformSettings();
   }, []);
-
-  const fetchPlatformSettings = async () => {
-    try {
-      const { data } = await getPlatformSettings();
-      if (data) {
-        setPlatformInsurancePrice(data.insurancePrice);
-      }
-    } catch (error) {
-      console.error("Failed to fetch platform settings:", error);
-    }
-  };
 
   useEffect(() => {
     if (isEdit) {

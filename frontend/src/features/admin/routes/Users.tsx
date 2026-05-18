@@ -10,7 +10,6 @@ import { User } from "@/features/admin/apis/types/user";
 import { Link, useNavigate } from "react-router-dom";
 import { updateUser } from "@/features/admin/apis/user";
 import { Box, Modal, Typography } from "@mui/material";
-import { usePermission } from "@/hooks/usePermission";
 
 
 export const Users = () => {
@@ -21,7 +20,6 @@ export const Users = () => {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState<string>("");
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
-  const { hasPermission } = usePermission();
   const { data, isLoading, refetch } = useUsers({
     filters: {
       role: 'user',
@@ -140,13 +138,11 @@ export const Users = () => {
         <div className="recent-orders table-card bg-white rounded-lg">
           <div className="table-header p-3 d-flex justify-content-between align-items-center">
             <h4 className="f-16 semi-bold">Renter List</h4>
-            {hasPermission("users", "create") && (
               <Button
                 onClick={() => navigate("add")}
                 className="light-btn">
                 <i className="fa-regular fa-plus"></i> Add User
               </Button>
-            )}
           </div>
           <div className="table-admin">
             <Table

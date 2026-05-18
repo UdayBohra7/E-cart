@@ -14,7 +14,12 @@ export const AppRoutes = () => {
   };
   const routes = user.data ? protectedRoutes : publicRoutes;
 
-  const element = useRoutes([intialRoute, ...routes, ...commonRoutes]);
+  const catchAllRoute = {
+    path: "*",
+    element: <Navigate to="/" replace />
+  };
+
+  const element = useRoutes([intialRoute, ...routes, ...commonRoutes, catchAllRoute]);
 
   return <>{element}</>; 
 };

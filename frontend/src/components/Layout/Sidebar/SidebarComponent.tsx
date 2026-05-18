@@ -12,18 +12,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import dash from "@/assets/dashboard.svg";
 import usr from "@/assets/users.svg";
-import discount from "@/assets/discount.svg";
 import orders from "@/assets/order-icon.svg";
-import reorders from "@/assets/reorders.svg";
-import role from "@/assets/role.svg";
-import report from "@/assets/report.svg";
-import content from "@/assets/content.svg";
 import product from "@/assets/product.svg";
-import support from "@/assets/support.svg";
-import bell from "@/assets/belll.svg";
-import order from "@/assets/orders.svg";
-import occ from "@/assets/occ.svg";
-import occasion from "@/assets/occasion.svg";
+
 const themes = {
   light: {
     sidebar: {
@@ -54,10 +45,6 @@ const hexToRgba = (hex: string, alpha: number) => {
   return `rgba(${r}, ${g}, ${b}, ${alpha})`;
 };
 
-import { usePermission } from "@/hooks/usePermission";
-
-// ... existing imports
-
 export const SidebarComponent = ({
   toggled,
   setToggled,
@@ -73,10 +60,8 @@ export const SidebarComponent = ({
   const to = (url: string) => () => {
     navigate(url);
   };
-  const { hasPermission } = usePermission();
 
   const menuItemStyles: MenuItemStyles = {
-    // ... existing styles
     root: {
       fontSize: "13px",
       fontWeight: 400,
@@ -125,9 +110,6 @@ export const SidebarComponent = ({
     }
   }, [location]);
 
-  // Removed local useUser and hasPermission logic
-
-
   return (
     <motion.div
       initial={{ opacity: 0, x: -100 }}
@@ -165,163 +147,33 @@ export const SidebarComponent = ({
 
             <Menu menuItemStyles={menuItemStyles}>
               <MenuItem
-                onClick={hasPermission("product") ? to("/admin/product-list") : undefined}
+                onClick={to("/admin/product-list")}
                 active={active === "product-list"}
                 icon={<img src={product} className="menu-icon" />}
-                disabled={!hasPermission("product")}
               >
-                Products {!hasPermission("product") && <i className="fa-solid fa-lock ms-2" />}
+                Products
               </MenuItem>
             </Menu>
+            
             <Menu menuItemStyles={menuItemStyles}>
               <MenuItem
-                onClick={hasPermission("product") ? to("/admin/categories") : undefined}
+                onClick={to("/admin/categories")}
                 active={active === "categories"}
                 icon={<img src={orders} className="menu-icon" />}
-                disabled={!hasPermission("product")}
               >
-                Categories {!hasPermission("product") && <i className="fa-solid fa-lock ms-2" />}
+                Categories
               </MenuItem>
             </Menu>
+
             <Menu menuItemStyles={menuItemStyles}>
               <MenuItem
-                onClick={hasPermission("product") ? to("/admin/brands") : undefined}
-                active={active === "brands"}
-                icon={<img src={occasion} className="menu-icon" />}
-                disabled={!hasPermission("product")}
-              >
-                Brands {!hasPermission("product") && <i className="fa-solid fa-lock ms-2" />}
-              </MenuItem>
-            </Menu>
-            <Menu menuItemStyles={menuItemStyles}>
-              <MenuItem
-                onClick={hasPermission("product") ? to("/admin/occasions") : undefined}
-                active={active === "occasions"}
-                icon={<img src={occ} className="menu-icon" />}
-                disabled={!hasPermission("product")}
-              >
-                Occasions {!hasPermission("product") && <i className="fa-solid fa-lock ms-2" />}
-              </MenuItem>
-            </Menu>
-            <Menu menuItemStyles={menuItemStyles}>
-              <MenuItem
-                onClick={hasPermission("users") ? to("/admin/users") : undefined}
+                onClick={to("/admin/users")}
                 active={active === "users"}
                 icon={<img src={usr} className="menu-icon" />}
-                disabled={!hasPermission("users")}
               >
-                Manage Users {!hasPermission("users") && <i className="fa-solid fa-lock ms-2" />}
+                Manage Users
               </MenuItem>
             </Menu>
-            <Menu menuItemStyles={menuItemStyles}>
-              <MenuItem
-                onClick={hasPermission("order") ? to("/admin/orders") : undefined}
-                active={active === "orders"}
-                icon={<img src={order} className="menu-icon" />}
-                disabled={!hasPermission("order")}
-              >
-                Orders {!hasPermission("order") && <i className="fa-solid fa-lock ms-2" />}
-              </MenuItem>
-            </Menu>
-            <Menu menuItemStyles={menuItemStyles}>
-              <MenuItem
-                onClick={hasPermission("order") ? to("/admin/re-orders") : undefined}
-                active={active === "re-orders"}
-                icon={<img src={reorders} className="menu-icon" />}
-                disabled={!hasPermission("order")}
-              >
-                Reorder List {!hasPermission("order") && <i className="fa-solid fa-lock ms-2" />}
-              </MenuItem>
-            </Menu>
-            <Menu menuItemStyles={menuItemStyles}>
-              <MenuItem
-                onClick={hasPermission("discount") ? to("/admin/discounts") : undefined}
-                active={active === "discounts"}
-                icon={<img src={discount} className="menu-icon" />}
-                disabled={!hasPermission("discount")}
-              >
-                Discount Code {!hasPermission("discount") && <i className="fa-solid fa-lock ms-2" />}
-              </MenuItem>
-            </Menu>
-            {/* <Menu menuItemStyles={menuItemStyles}>
-              <MenuItem
-                onClick={to("/admin/ticket-history")}
-                active={active === "ticket-history"}
-                icon={<img src={discount} className="menu-icon" />}
-              >
-                Ticket
-              </MenuItem>
-            </Menu> */}
-            <Menu menuItemStyles={menuItemStyles}>
-              <MenuItem
-                onClick={hasPermission("roles") ? to("/admin/roles") : undefined}
-                active={active === "roles"}
-                icon={<img src={role} className="menu-icon" />}
-                disabled={!hasPermission("roles")}
-              >
-                Roles {!hasPermission("roles") && <i className="fa-solid fa-lock ms-2" />}
-              </MenuItem>
-            </Menu>
-            <Menu menuItemStyles={menuItemStyles}>
-              <MenuItem
-                onClick={hasPermission("notification") ? to("/admin/notifications") : undefined}
-                active={active === "notifications"}
-                icon={<img src={bell} className="menu-icon" />}
-                disabled={!hasPermission("notification")}
-              >
-                Notification {!hasPermission("notification") && <i className="fa-solid fa-lock ms-2" />}
-              </MenuItem>
-            </Menu>
-            <Menu menuItemStyles={menuItemStyles}>
-              <MenuItem
-                onClick={hasPermission("report") ? to("/admin/reports") : undefined}
-                active={active === "reports"}
-                icon={<img src={report} className="menu-icon" />}
-                disabled={!hasPermission("report")}
-              >
-                Report and Analytic {!hasPermission("report") && <i className="fa-solid fa-lock ms-2" />}
-              </MenuItem>
-            </Menu>
-            <Menu menuItemStyles={menuItemStyles}>
-              <MenuItem
-                onClick={hasPermission("content") ? to("/admin/content-management") : undefined}
-                active={active === "content-management"}
-                icon={<img src={content} className="menu-icon" />}
-                disabled={!hasPermission("content")}
-              >
-                Content Management {!hasPermission("content") && <i className="fa-solid fa-lock ms-2" />}
-              </MenuItem>
-            </Menu>
-            <Menu menuItemStyles={menuItemStyles}>
-              <MenuItem
-                onClick={hasPermission("support") ? to("/admin/query-management") : undefined}
-                active={active === "query-management"}
-                icon={<img src={support} className="menu-icon" />}
-                disabled={!hasPermission("support")}
-              >
-                Help & Support {!hasPermission("support") && <i className="fa-solid fa-lock ms-2" />}
-              </MenuItem>
-            </Menu>
-            <Menu menuItemStyles={menuItemStyles}>
-              <MenuItem
-                onClick={hasPermission("settings") ? to("/admin/settings") : undefined}
-                active={active === "settings"}
-                icon={<i className="fa-solid fa-gear"></i>}
-                disabled={!hasPermission("settings")}
-              >
-                Platform Settings {!hasPermission("settings") && <i className="fa-solid fa-lock ms-2" />}
-              </MenuItem>
-            </Menu>
-            {/* <Menu menuItemStyles={menuItemStyles}>
-              <SubMenu
-                label="Settings"
-                icon={<i className="fa-solid fa-gear"></i>}
-              >
-                <MenuItem> Pie charts</MenuItem>
-                <MenuItem> Line charts</MenuItem>
-                <MenuItem> Bar charts</MenuItem>
-              </SubMenu>
-            </Menu> */}
           </div>
         </div>
       </Sidebar>
