@@ -32,11 +32,3 @@ export const getUsers = async (params: any): Promise<{ results: User[], totalPag
         results: response.results.map(transformUser),
     };
 };
-
-export const blockUnblockUser = async (id: string): Promise<any> => {
-    return axios.post(`/users/${id}/block`);
-};
-
-export const verifyUserIdentity = async (id: string): Promise<any> => {
-    return axios.post(`/users/${id}/verify-identity`);
-};

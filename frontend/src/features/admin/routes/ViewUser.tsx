@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import customer from "@/assets/customer.jpg";
 import { Button, Spinner } from "@/components/Elements";
 import { useEffect, useState } from "react";
-import { getUserById, blockUnblockUser, deleteUser, verifyUserIdentity } from "../apis/user";
+import { getUserById, deleteUser } from "../apis/user";
 import { User } from "../apis/types/user";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -27,20 +27,6 @@ export const ViewUser = () => {
     }
   };
 
-  const handleBlockUnblock = async () => {
-    if (!id) return;
-    setActionLoading(true);
-    try {
-      const response = await blockUnblockUser(id);
-      setUserDetails(response?.data);
-      toast.success(response?.message);
-    } catch (error) {
-      console.error('Error blocking/unblocking user:', error);
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
   const handleDelete = async () => {
     if (!id) return;
     if (!confirm('Are you sure you want to delete this user?')) return;
@@ -57,24 +43,6 @@ export const ViewUser = () => {
       setActionLoading(false);
     }
   };
-
-  const handleVerifyIdentity = async () => {
-    if (!id) return;
-    if (!confirm('Are you sure you want to verify this user\'s identity?')) return;
-
-    setActionLoading(true);
-    try {
-      const response = await verifyUserIdentity(id);
-      setUserDetails(response?.data);
-      toast.success(response?.message);
-    } catch (error) {
-      console.error('Error verifying identity:', error);
-      toast.error('Failed to verify identity');
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
   useEffect(() => {
     if (id) {
       fetchData()
@@ -129,13 +97,6 @@ export const ViewUser = () => {
                       onClick={() => navigate(`/admin/users/${id}/edit`)}
                     >
                       Edit
-                    </Button>
-                    <Button
-                      className="light-btn bg-black"
-                      onClick={handleBlockUnblock}
-                      disabled={actionLoading}
-                    >
-                      {actionLoading ? 'Loading...' : (userDetails?.isBlocked ? 'Unblock' : 'Block')}
                     </Button>
                     <Button
                       className="light-btn"
@@ -230,13 +191,6 @@ export const ViewUser = () => {
                     :
                     <div className="d-flex align-items-center gap-3">
                       <span className="red semi-bold">Unverified</span>
-                      <Button
-                        className="light-btn btn-primary"
-                        onClick={handleVerifyIdentity}
-                        disabled={actionLoading}
-                      >
-                        {actionLoading ? 'Loading...' : 'Verify Identity'}
-                      </Button>
                     </div>
                   }
                 </div>

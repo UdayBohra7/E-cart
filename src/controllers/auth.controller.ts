@@ -1,5 +1,6 @@
 import httpStatus from 'http-status';
 import catchAsync from '../utils/catchAsync';
+import ApiError from '../utils/ApiError';
 import { authService, userService, tokenService } from '../services';
 
 const register = catchAsync(async (req, res) => {
@@ -11,6 +12,16 @@ const register = catchAsync(async (req, res) => {
 const login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
   const user = await authService.loginUserWithEmailAndPassword(email, password);
+  const tokens = await tokenService.generateAuthTokens(user);
+  res.send({ user, tokens });
+});
+
+const adminLogin = catchAsync(async (req, res) => {
+  const { email, password } = req.body;
+  const user = await authService.loginUserWithEmailAndPassword(email, password);
+  if (user.role !== 'ADMIN') {
+    throw new ApiError(httpStatus.FORBIDDEN, 'Access denied. Only admins can login here.');
+  }
   const tokens = await tokenService.generateAuthTokens(user);
   res.send({ user, tokens });
 });
@@ -28,6 +39,7 @@ const refreshTokens = catchAsync(async (req, res) => {
 export default {
   register,
   login,
+  adminLogin,
   logout,
   refreshTokens,
 };
