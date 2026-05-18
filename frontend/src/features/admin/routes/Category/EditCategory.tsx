@@ -63,7 +63,7 @@ export const EditCategory = () => {
                             <div className="detail-card mb-4">
                                 <div className="customer-title d-flex justify-content-between align-items-center">
                                     <h4 className="f-14 bold grey mb-0">Edit Category Details</h4>
-                                    <Button type="submit" isLoading={mutation.isPending} className="light-btn">Update Category</Button>
+                                    <Button type="submit" isLoading={mutation.isLoading} className="light-btn">Update Category</Button>
                                 </div>
                                 <div className="add-box">
                                     <div className="row">

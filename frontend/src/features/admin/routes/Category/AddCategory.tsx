@@ -46,7 +46,7 @@ export const AddCategory = () => {
                         <div className="detail-card mb-4">
                             <div className="customer-title d-flex justify-content-between align-items-center">
                                 <h4 className="f-14 bold grey mb-0">Add Category Details</h4>
-                                <Button type="submit" isLoading={mutation.isPending} className="light-btn">Create Category</Button>
+                                <Button type="submit" isLoading={mutation.isLoading} className="light-btn">Create Category</Button>
                             </div>
                             <div className="add-box">
                                 <div className="row">
