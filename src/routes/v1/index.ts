@@ -3,6 +3,7 @@ import authRoute from './auth.route';
 import userRoute from './user.route';
 import productRoute from './product.route';
 import categoryRoute from './category.route';
+import uploadRoute from './upload.route';
 
 const router = express.Router();
 
@@ -22,6 +23,10 @@ const defaultRoutes = [
   {
     path: '/categories',
     route: categoryRoute,
+  },
+  {
+    path: '/app',
+    route: uploadRoute,
   },
 ];
 

@@ -15,7 +15,7 @@ export const ViewProduct = () => {
     if (!id) return;
     try {
       const response = await getProductById(id);
-      setProduct(response.data);
+      setProduct(response);
     } catch (error) {
       console.error('Error fetching product:', error);
     } finally {

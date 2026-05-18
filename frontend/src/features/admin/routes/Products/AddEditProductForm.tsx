@@ -13,6 +13,7 @@ import { TextareaAutosize } from "@mui/material";
 import { addNewProduct } from "../../apis/products/createProduct";
 import { toast } from "sonner";
 import { updateProduct } from "../../apis/product";
+import { getCategories } from "../../apis/category";
 import { FormControlLabel, Checkbox } from "@mui/material";
 
 export const variantSchema = z
@@ -479,8 +480,8 @@ export const AddEditProductForm = ({ isEdit = false, data }: Props) => {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get("/categories");
-      const data = response?.data?.map((ele: any) => ({
+      const response = await getCategories({});
+      const data = response?.results?.map((ele: any) => ({
         label: ele?.name,
         value: ele?._id,
       }));

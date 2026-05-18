@@ -28,7 +28,7 @@ export const CategoryList = () => {
     }, [searchQuery]);
 
     // Client-side filtering as per previous implementation (or we can move to server side later if API supports it)
-    const filteredData = categories?.data?.filter((entry) =>
+    const filteredData = categories?.results?.filter((entry) =>
         entry?.name?.toLowerCase()?.includes(debouncedSearchQuery.toLowerCase()) ||
         entry?.description?.toLowerCase()?.includes(debouncedSearchQuery.toLowerCase())
     ) || [];

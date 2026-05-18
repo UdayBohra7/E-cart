@@ -50,7 +50,7 @@ export const ProductsList = () => {
         limit: 10,
         search: debouncedSearchQuery,
       });
-      setProducts(response.data.results);
+      setProducts(response.results);
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {

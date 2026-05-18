@@ -47,14 +47,14 @@ export const EditCategory = () => {
     return (
         <ContentWrapper title="Edit Category">
             <h3 className="pb-3 f-20">Edit Category</h3>
-            {category?.data && (
+            {category && (
                 <Form<CategoryValues, typeof schema>
                     onSubmit={(values) => mutation.mutate(values)}
                     schema={schema}
                     options={{
                         defaultValues: {
-                            name: category.data.name,
-                            description: category.data.description
+                            name: category.name,
+                            description: category.description
                         }
                     }}
                 >
