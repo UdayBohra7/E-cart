@@ -58,11 +58,10 @@ model Product {
 }
 
 model Category {
-  id        Int       @id @default(autoincrement())
-  name      String    @unique
-  products  Product[]
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  id          Int       @id @default(autoincrement())
+  name        String    @unique
+  description String?   @db.Text
+  products    Product[]
 
   @@map("categories")
 }

@@ -19,7 +19,7 @@ export const TotalCustomer = ({ loading, newUsers }: Props) => {
         type: "radialBar" as "radialBar",
         offsetY: -10,
       },
-      colors: ['#EB9AA8'],
+      colors: ['#6366f1'],
       plotOptions: {
         radialBar: {
           startAngle: -135,
@@ -45,7 +45,7 @@ export const TotalCustomer = ({ loading, newUsers }: Props) => {
       fill: {
         type: "gradient",
         gradient: {
-          shade: "#EB9AA8",
+          shade: "#6366f1",
           shadeIntensity: 0.15,
           inverseColors: false,
           opacityFrom: 1,

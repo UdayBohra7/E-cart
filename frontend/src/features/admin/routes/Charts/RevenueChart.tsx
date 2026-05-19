@@ -22,7 +22,7 @@ export const RevenueChart = ({ loading, chartData, duration, setDuration }: Prop
         height: 350,
         type: 'line' as 'line',
       },
-      colors: ['#EB9AA8', '#22C55E40'],
+      colors: ['#6366f1', '#22C55E40'],
       stroke: {
         width: [0, 4]
       },

@@ -2,7 +2,7 @@ import Table from "@/components/Elements/Table/Table";
 import ContentWrapper from "@/components/Layout/ContentWrapper";
 import dele from "@/assets/del.svg";
 import view from "@/assets/view.svg";
-import edit from "@/assets/editnew.png";
+import edit from "@/assets/edit.svg";
 
 import del from "@/assets/del.png";
 import { Link } from "react-router-dom";
@@ -89,28 +89,43 @@ export const ProductsList = () => {
     {
       id: "name",
       header: "Product",
-      cell: (row: Product) => (
-        <div className="product-category d-flex align-items-center gap-2">
-          <img src={row.images?.[0] || fashion} className="fashion-icon" />
-          <div className="prodt-details">
-            <h5 className="font-medium f-16 mb-0">{row.name}</h5>
-          </div>
-        </div>
-      ),
-    },
-    {
-      id: "sellingPrice",
-      header: "Price",
       cell: (row: Product) => {
-        const item = row.variants?.length ? row.variants[0] : row;
-        const price = item.sellingPrice || item.selectedDaysAndPrices?.[0]?.price;
-        return price ? `$${price}` : "N/A";
+        let firstImage = fashion;
+        if (row.images) {
+          try {
+            if (row.images.startsWith('[')) {
+              const parsed = JSON.parse(row.images);
+              firstImage = parsed[0] || fashion;
+            } else {
+              firstImage = row.images.split(',')[0] || fashion;
+            }
+          } catch (e) {
+            firstImage = row.images || fashion;
+          }
+        }
+        return (
+          <div className="product-category d-flex align-items-center gap-2">
+            <img src={firstImage} className="fashion-icon" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '4px' }} />
+            <div className="prodt-details">
+              <h5 className="font-medium f-16 mb-0">{row.name}</h5>
+            </div>
+          </div>
+        );
       },
     },
     {
-      id: "createdAt",
-      header: "Created Date",
-      cell: (row: Product) => moment(row.createdAt).format("ll"),
+      id: "price",
+      header: "Price",
+      cell: (row: Product) => {
+        return row.price ? `$${row.price}` : "$0.00";
+      },
+    },
+    {
+      id: "stock",
+      header: "Stock",
+      cell: (row: Product) => {
+        return row.stock !== undefined ? row.stock : 0;
+      },
     },
     {
       id: "category",
@@ -118,19 +133,9 @@ export const ProductsList = () => {
       cell: (row: Product) => row.category?.name || "N/A",
     },
     {
-      id: "designerName",
-      header: "Designer Name",
-      cell: (row: Product) => row.designerName || "N/A",
-    },
-    {
-      id: "listingType",
-      header: "Listing Type",
-      cell: (row: Product) => row?.listingType || row?.variants?.length && row?.variants[0].listingType,
-    },
-    {
-      id: "shippingOptions",
-      header: "Shipping",
-      cell: (row: Product) => row?.shippingOptions,
+      id: "createdAt",
+      header: "Created Date",
+      cell: (row: Product) => moment(row.createdAt).format("ll"),
     },
     {
       id: "action",
@@ -163,75 +168,54 @@ export const ProductsList = () => {
     },
   ];
 
+  const totalProducts = products.length;
+  const totalStock = products.reduce((acc, p) => acc + (p.stock || 0), 0);
+  const totalValue = products.reduce((acc, p) => acc + (Number(p.price || 0) * (p.stock || 0)), 0).toFixed(2);
+
   return (
     <ContentWrapper title="Products List">
       <h3 className="pb-3 f-20">Products List</h3>
       <div className="row mb-4">
-        <div className="col-12 col-md-3 mb-3">
-          <div className="orders-box bg-white rounded-lg">
-            <div className="order-title p-3">
-              <div className="cocktail text-center">
+        <div className="col-12 col-md-4 mb-3">
+          <div className="orders-box bg-white rounded-lg border p-3">
+            <div className="order-title d-flex align-items-center gap-3">
+              <div className="cocktail text-center" style={{ backgroundColor: 'rgba(99, 102, 241, 0.1)' }}>
                 <img src={refund} className="cock-icon" />
               </div>
-              <div className="order-details-dash text-center">
-                <p className="f-18 mb-0 semi-bold">Total Products</p>
-                <p className="f-24 semi-bold">
-                  {loading ? "..." : products.length}
+              <div className="order-details-dash">
+                <p className="f-14 mb-0 text-muted">Total Products</p>
+                <p className="f-24 semi-bold mb-0 text-dark">
+                  {loading ? "..." : totalProducts}
                 </p>
               </div>
             </div>
           </div>
         </div>
-        <div className="col-12 col-md-3 mb-3">
-          <div className="orders-box bg-white rounded-lg">
-            <div className="order-title p-3">
-              <div className="cocktail wedding text-center">
+        <div className="col-12 col-md-4 mb-3">
+          <div className="orders-box bg-white rounded-lg border p-3">
+            <div className="order-title d-flex align-items-center gap-3">
+              <div className="cocktail text-center" style={{ backgroundColor: 'rgba(16, 185, 129, 0.1)' }}>
                 <img src={wedd} className="cock-icon" />
               </div>
-              <div className="order-details-dash text-center">
-                <p className="f-18 mb-0 semi-bold">For Rent</p>
-                <p className="f-24 semi-bold">
-                  {loading ? "..." :
-                    products.filter(
-                      (p) =>
-                        p.listingType === "rent" || p.listingType === "both"
-                    ).length
-                  }
+              <div className="order-details-dash">
+                <p className="f-14 mb-0 text-muted">Total Stock</p>
+                <p className="f-24 semi-bold mb-0 text-dark">
+                  {loading ? "..." : totalStock}
                 </p>
               </div>
             </div>
           </div>
         </div>
-        <div className="col-12 col-md-3 mb-3">
-          <div className="orders-box bg-white rounded-lg">
-            <div className="order-title p-3">
-              <div className="cocktail bridal text-center">
+        <div className="col-12 col-md-4 mb-3">
+          <div className="orders-box bg-white rounded-lg border p-3">
+            <div className="order-title d-flex align-items-center gap-3">
+              <div className="cocktail text-center" style={{ backgroundColor: 'rgba(245, 158, 11, 0.1)' }}>
                 <img src={bride} className="cock-icon" />
               </div>
-              <div className="order-details-dash text-center">
-                <p className="f-18 mb-0 semi-bold">For Sale</p>
-                <p className="f-24 semi-bold">
-                  {loading ? "..." :
-                    products.filter(
-                      (p) =>
-                        p.listingType === "purchase" || p.listingType === "both"
-                    ).length
-                  }
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="col-12 col-md-3 mb-3">
-          <div className="orders-box bg-white rounded-lg">
-            <div className="order-title p-3">
-              <div className="cocktail party text-center">
-                <img src={party} className="cock-icon" />
-              </div>
-              <div className="order-details-dash text-center">
-                <p className="f-18 mb-0 semi-bold">Both</p>
-                <p className="f-24 semi-bold">
-                  {loading ? "..." : products.filter((p) => p.listingType === "both").length}
+              <div className="order-details-dash">
+                <p className="f-14 mb-0 text-muted">Inventory Value</p>
+                <p className="f-24 semi-bold mb-0 text-dark">
+                  {loading ? "..." : `$${totalValue}`}
                 </p>
               </div>
             </div>

@@ -1,307 +1,134 @@
 import { Button } from "@/components/Elements";
-import { Form, InputDate, InputField } from "@/components/Form";
-import { InputPhone } from "@/components/Form/InputPhone";
+import { Form, InputField } from "@/components/Form";
 import ContentWrapper from "@/components/Layout/ContentWrapper";
 import { z } from "zod";
-import { createUser, updateUser } from "../../apis/user"; // Assuming updateUser API exists
+import { createUser, updateUser } from "../../apis/user";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import { useMemo, useState } from "react";
-import moment from "moment";
-import { axios } from "@/lib/axios";
-import { parsePhoneNumber } from 'react-phone-number-input';
-
-
-const schema = z.object({
-  name: z.string().min(1, "Please enter your name"),
-  role: z.string().min(1, "Please select a role"),
-  email: z
-    .string()
-    .min(1, "Please enter email address")
-    .email("Please enter a valid email address!"),
-  phone: z.string().min(5, "Please enter a valid phone number"),
-  dob: z.date().optional(),
-  username: z.string().min(1, "Please enter a username"),
-  bio: z.string().optional(),
-  country: z.string().min(1, "Please select your country"),
-  addressLine1: z.string().min(1, "Please enter your address line 1"),
-  addressLine2: z.string().optional(),
-  suburb: z.string().optional(),
-  state: z.string().optional(),
-  postcode: z.string().optional(),
-  businessLocation: z.string().min(1, "Please enter your location"),
-});
-
-type UserValues = {
-  name: string;
-  role: string;
-  email: string;
-  phone: string;
-  dob?: any;
-  username: string;
-  bio: string;
-  country: string;
-  addressLine1: string;
-  addressLine2?: string;
-  suburb: string;
-  state: string;
-  postcode: string;
-  businessLocation: string;
-};
+import { Checkbox, FormControlLabel } from "@mui/material";
 
 interface Props {
   isEdit: boolean;
   data?: any;
 }
 
+const getValidationSchema = (isEdit: boolean) => {
+  return z.object({
+    name: z.string().min(1, "Please enter name"),
+    email: z
+      .string()
+      .min(1, "Please enter email address")
+      .email("Please enter a valid email address!"),
+    role: z.enum(["USER", "ADMIN"], { required_error: "Please select a role" }),
+    phone: z.string().optional(),
+    countryCode: z.string().optional(),
+    businessLocation: z.string().optional(),
+    password: isEdit
+      ? z.string().optional()
+      : z.string().min(8, "Password must be at least 8 characters"),
+    isActive: z.boolean().optional(),
+    isBlocked: z.boolean().optional(),
+  });
+};
+
+type UserValues = {
+  name: string;
+  email: string;
+  role: "USER" | "ADMIN";
+  phone?: string;
+  countryCode?: string;
+  businessLocation?: string;
+  password?: string;
+  isActive?: boolean;
+  isBlocked?: boolean;
+};
+
 const AddEditUserForm = ({ isEdit, data }: Props) => {
   const navigate = useNavigate();
-  const [uploading, setUploading] = useState<"profile" | "business" | "form" | "">("");
-  const [imageFile, setImageFile] = useState({
-    profile: data?.image || "",
-    business: data?.businessImage || "",
-    profileImgName: "",
-    businessImgName: "",
-  });
+  const [saving, setSaving] = useState(false);
+
+  const schema = useMemo(() => getValidationSchema(isEdit), [isEdit]);
 
   const handleSubmit = async (values: UserValues) => {
     try {
-      setUploading("form");
+      setSaving(true);
 
-      let countryCode = "";
-      let phone = values.phone;
-
-      try {
-        const phoneNumber = parsePhoneNumber(values.phone);
-        if (phoneNumber) {
-          countryCode = "+" + phoneNumber.countryCallingCode;
-          phone = phoneNumber.nationalNumber;
-        }
-      } catch (e) {
-        console.error("Error parsing phone", e);
-      }
-
-      const finalData = {
-        role: values.role,
-        image: imageFile.profile,
-        businessImage: imageFile.business,
+      const finalData: any = {
         name: values.name,
         email: values.email,
-        phone: phone,
-        countryCode: countryCode,
-        dob: values?.dob ? moment(values?.dob).format("ll") : "",
-        username: values.username,
-        bio: values.bio,
-        businessLocation: values.businessLocation,
-        address: {
-          country: values.country,
-          addressLine1: values.addressLine1,
-          addressLine2: values?.addressLine2 || "",
-          suburb: values?.suburb,
-          state: values?.state,
-          postcode: values?.postcode,
-        },
+        role: values.role,
+        phone: values.phone || null,
+        countryCode: values.countryCode || null,
+        businessLocation: values.businessLocation || null,
+        isActive: values.isActive ?? true,
+        isBlocked: values.isBlocked ?? false,
       };
 
+      if (!isEdit && values.password) {
+        finalData.password = values.password;
+      } else if (isEdit && values.password && values.password.trim() !== "") {
+        finalData.password = values.password;
+      }
+
       if (isEdit) {
-        const response = await updateUser(data._id, finalData); // Assuming updateUser API exists
-        toast.success(response.message || "");
+        await updateUser(data?._id || data?.id?.toString(), finalData);
+        toast.success("User updated successfully");
       } else {
-        const response = await createUser(finalData);
-        toast.success(response.message || "");
+        await createUser(finalData);
+        toast.success("User created successfully");
       }
 
       navigate("/admin/users");
-    } catch (e) {
+    } catch (e: any) {
+      console.error("Error saving user:", e);
+      toast.error(e?.response?.data?.message || "An error occurred while saving user details.");
     } finally {
-      setUploading("");
+      setSaving(false);
     }
   };
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>, type: "profile" | "business") => {
-    const selectedFile = event.target.files ? event.target.files[0] : null;
-
-    if (selectedFile) {
-      setUploading(type);
-      try {
-        const formData = new FormData();
-        formData.append("file", selectedFile);
-
-        const response = await axios.post("/app/upload-file", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-
-        const fileUrl = response.data;
-        if (type === "profile") {
-          setImageFile((prev) => ({
-            ...prev,
-            profile: fileUrl,
-            profileImgName: selectedFile?.name || "",
-          }));
-        } else {
-          setImageFile((prev) => ({
-            ...prev,
-            business: fileUrl,
-            businessImgName: selectedFile?.name || "",
-          }));
-        }
-      } catch (error) {
-        // Handle error
-      } finally {
-        setUploading("");
-      }
+  const defaultValues = useMemo<any>(() => {
+    if (isEdit && data) {
+      return {
+        name: data.name || "",
+        email: data.email || "",
+        role: data.role || "USER",
+        phone: data.phone || "",
+        countryCode: data.countryCode || "",
+        businessLocation: data.businessLocation || "",
+        isActive: data.isActive ?? true,
+        isBlocked: data.isBlocked ?? false,
+        password: "",
+      };
     }
-  };
-
-  const handleDrop = async (event: React.DragEvent<HTMLDivElement>, type: "profile" | "business") => {
-    event.preventDefault();
-    const droppedFile = event.dataTransfer.files ? event.dataTransfer.files[0] : null;
-
-    if (droppedFile) {
-      setUploading(type);
-      try {
-        const formData = new FormData();
-        formData.append("file", droppedFile);
-
-        const response = await axios.post("/app/upload-file", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        });
-
-        const fileUrl = response.data;
-        if (type === "profile") {
-          setImageFile((prev) => ({
-            ...prev,
-            profile: fileUrl,
-            profileImgName: droppedFile?.name || "",
-          }));
-        } else {
-          setImageFile((prev) => ({
-            ...prev,
-            business: fileUrl,
-            businessImgName: droppedFile?.name || "",
-          }));
-        }
-      } catch (error) {
-        // Handle error
-      } finally {
-        setUploading("");
-      }
-    }
-  };
-
-  const handleDragOver = (event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-  };
-
-  const defaultValues = useMemo<any>(() => isEdit
-    ? {
-      name: data?.name || "",
-      email: data?.email,
-      phone: (data?.countryCode || "") + (data?.phone || ""),
-      role: data?.role || "user",
-      dob: data?.dob ? moment(data.dob).toDate() : "",
-      username: data?.username || "",
-      bio: data?.bio || "",
-      country: data?.personalAddress?.country || "",
-      addressLine1: data?.personalAddress?.addressLine1 || "",
-      addressLine2: data?.personalAddress?.addressLine2 || "",
-      suburb: data?.personalAddress?.suburb || "",
-      state: data?.personalAddress?.state || "",
-      postcode: data?.personalAddress?.postcode || "",
-      businessLocation: data?.businessLocation || "",
-    }
-    : { role: "user" }, [data])
+    return {
+      role: "USER",
+      isActive: true,
+      isBlocked: false,
+      password: "",
+    };
+  }, [data, isEdit]);
 
   return (
     <ContentWrapper title={isEdit ? "Edit User" : "Add User"}>
-      <h3 className="pb-3 f-20">{isEdit ? "Edit Customer" : "Add Customer"}</h3>
-      <Form<UserValues, typeof schema> onSubmit={handleSubmit} schema={schema} options={{
-        defaultValues: {
-          ...defaultValues
-        }
-      }}>
-        {({ register, formState, control }) => {
+      <h3 className="pb-3 f-20">{isEdit ? "Edit User Details" : "Add User"}</h3>
+      <Form<UserValues, typeof schema>
+        onSubmit={handleSubmit}
+        schema={schema}
+        options={{
+          defaultValues: defaultValues
+        }}
+      >
+        {({ register, formState }) => {
           return (
             <>
-              <div className="detail-card mb-4">
-                <div className="customer-title d-flex justify-content-between align-items-center">
-                  <h4 className="f-14 bold grey mb-0">Customer Details</h4>
-                  <Button disabled={uploading === "form"} type="submit" className={"light-btn"}>
-                    {uploading === "form" ? "Please wait.." : "Save"}
-                  </Button>
+              {/* User details card */}
+              <div className="detail-card mb-4 border rounded p-4 bg-white">
+                <div className="customer-title mb-3">
+                  <h4 className="f-14 bold grey mb-0">Account Information</h4>
                 </div>
                 <div className="add-box">
-                  <div className="row">
-                    {/* Profile Photo */}
-                    <div className="col-12 col-md-6 mb-4">
-                      <div>
-                        <label className="form-label">Profile Photo</label>
-                        <div
-                          className="upload-container relative"
-                          style={{
-                            border: "2px dashed #ccc",
-                            padding: "20px",
-                            borderRadius: "10px",
-                            textAlign: "center",
-                            cursor: "pointer",
-                            background: `url('${imageFile.profile}') center/contain no-repeat`,
-                          }}
-                          onDrop={(e) => handleDrop(e, "profile")}
-                          onDragOver={handleDragOver}
-                        >
-                          {imageFile?.profileImgName ? (
-                            // <p>{imageFile.profileImgName}</p>
-                            <span></span>
-                          ) : (
-                            <p>Drag and drop or click here to select file</p>
-                          )}
-                          <input
-                            type="file"
-                            className="pro-upload"
-                            onChange={(e) => handleFileChange(e, "profile")}
-                            accept="image/*"
-                          />
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Business Photo */}
-                    <div className="col-12 col-md-6 mb-4">
-                      <div>
-                        <label className="form-label">Business Photo</label>
-                        <div
-                          className="upload-container relative"
-                          style={{
-                            border: "2px dashed #ccc",
-                            padding: "20px",
-                            borderRadius: "10px",
-                            textAlign: "center",
-                            cursor: "pointer",
-                            background: `url('${imageFile.business}') center/contain no-repeat`,
-                          }}
-                          onDrop={(e) => handleDrop(e, "business")}
-                          onDragOver={handleDragOver}
-                        >
-                          {uploading === "business" ? (
-                            <p>Uploading...</p>
-                          ) : imageFile?.businessImgName ? (
-                            // <p>{imageFile.businessImgName}</p>
-                            <span></span>
-                          ) : (
-                            <p>Drag and drop or click here to select file</p>
-                          )}
-                          <input
-                            type="file"
-                            className="pro-upload"
-                            onChange={(e) => handleFileChange(e, "business")}
-                            accept="image/*"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* User Information Fields */}
                   <div className="row">
                     <div className="col-12 col-md-6">
                       <InputField
@@ -319,15 +146,18 @@ const AddEditUserForm = ({ isEdit, data }: Props) => {
                         registration={register("email")}
                       />
                     </div>
+                  </div>
+
+                  <div className="row mt-3">
                     <div className="col-12 col-md-6">
                       <div className="mb-3">
-                        <label className="form-label">Role</label>
+                        <label className="form-label font-medium">Role</label>
                         <select
                           className="form-control"
                           {...register("role")}
                         >
-                          <option value="user">User</option>
-                          <option value="admin">Admin</option>
+                          <option value="USER">User</option>
+                          <option value="ADMIN">Admin</option>
                         </select>
                         {formState.errors["role"] && (
                           <div className="invalid-feedback d-block">
@@ -337,107 +167,35 @@ const AddEditUserForm = ({ isEdit, data }: Props) => {
                       </div>
                     </div>
                     <div className="col-12 col-md-6">
-                      <InputPhone
-                        control={control}
-                        label="Phone number"
+                      <InputField
+                        type="password"
+                        label={isEdit ? "New Password (leave empty to keep current)" : "Password"}
+                        error={formState.errors["password"]}
+                        registration={register("password")}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="row mt-3">
+                    <div className="col-12 col-md-6">
+                      <InputField
+                        type="text"
+                        label="Phone Number"
                         error={formState.errors["phone"]}
                         registration={register("phone")}
                       />
                     </div>
                     <div className="col-12 col-md-6">
-                      <InputDate
-                        control={control}
-                        label="Date of Birth"
-                        registration={register("dob")}
-                        error={formState.errors["dob"]}
-                      />
-                    </div>
-                    <div className="col-12 col-md-6">
                       <InputField
                         type="text"
-                        label="User Name"
-                        error={formState.errors["username"]}
-                        registration={register("username")}
-                      />
-                    </div>
-                    <div className="col-12 col-md-6">
-                      <InputField
-                        type="text"
-                        label="Add Bio"
-                        error={formState.errors["bio"]}
-                        registration={register("bio")}
+                        label="Country Code (e.g. +1)"
+                        error={formState.errors["countryCode"]}
+                        registration={register("countryCode")}
                       />
                     </div>
                   </div>
-                </div>
-              </div>
 
-              {/* Address Details */}
-              <div className="detail-card mb-4">
-                <div className="customer-title">
-                  <h4 className="f-14 bold grey mb-0">Customer Address</h4>
-                </div>
-                <div className="add-box">
-                  <div className="row">
-                    <div className="col-12 col-md-6">
-                      <InputField
-                        type="text"
-                        label="Country/Region"
-                        error={formState.errors["country"]}
-                        registration={register("country")}
-                      />
-                    </div>
-                    <div className="col-12 col-md-6">
-                      <InputField
-                        type="text"
-                        label="Address Line 1"
-                        error={formState.errors["addressLine1"]}
-                        registration={register("addressLine1")}
-                      />
-                    </div>
-                    <div className="col-12 col-md-6">
-                      <InputField
-                        type="text"
-                        label="Address Line 2"
-                        error={formState.errors["addressLine2"]}
-                        registration={register("addressLine2")}
-                      />
-                    </div>
-                    <div className="col-12 col-md-6">
-                      <InputField
-                        type="text"
-                        label="Suburb"
-                        error={formState.errors["suburb"]}
-                        registration={register("suburb")}
-                      />
-                    </div>
-                    <div className="col-12 col-md-6">
-                      <InputField
-                        type="text"
-                        label="State/Territory"
-                        error={formState.errors["state"]}
-                        registration={register("state")}
-                      />
-                    </div>
-                    <div className="col-12 col-md-6">
-                      <InputField
-                        type="number"
-                        label="Postcode"
-                        error={formState.errors["postcode"]}
-                        registration={register("postcode")}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Business Details */}
-              <div className="detail-card mb-4">
-                <div className="customer-title">
-                  <h4 className="f-14 bold grey mb-0">Business Details</h4>
-                </div>
-                <div className="add-box">
-                  <div className="row">
+                  <div className="row mt-3">
                     <div className="col-12 col-md-6">
                       <InputField
                         type="text"
@@ -447,10 +205,47 @@ const AddEditUserForm = ({ isEdit, data }: Props) => {
                       />
                     </div>
                   </div>
+
+                  <div className="row mt-4">
+                    <div className="col-12 col-md-6 d-flex align-items-center gap-4">
+                      <FormControlLabel
+                        control={
+                          <input
+                            type="checkbox"
+                            className="form-check-input mr-2"
+                            {...register("isActive")}
+                            defaultChecked={defaultValues.isActive}
+                          />
+                        }
+                        label="Active Status"
+                      />
+                      <FormControlLabel
+                        control={
+                          <input
+                            type="checkbox"
+                            className="form-check-input mr-2"
+                            {...register("isBlocked")}
+                            defaultChecked={defaultValues.isBlocked}
+                          />
+                        }
+                        label="Blocked Status"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
+
+              {/* Form buttons */}
+              <div className="d-flex gap-3 justify-content-end">
+                <Button disabled={saving} type="submit" className="btn btn-primary">
+                  {saving ? "Please wait.." : "Save"}
+                </Button>
+                <Button type="button" className="border-btn" onClick={() => navigate("/admin/users")}>
+                  Cancel
+                </Button>
+              </div>
             </>
-          )
+          );
         }}
       </Form>
     </ContentWrapper>

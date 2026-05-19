@@ -1,6 +1,5 @@
 import ContentWrapper from "@/components/Layout/ContentWrapper";
 import { useParams } from "react-router-dom";
-import customer from "@/assets/customer.jpg";
 import { Button, Spinner } from "@/components/Elements";
 import { useEffect, useState } from "react";
 import { getUserById, deleteUser } from "../apis/user";
@@ -43,55 +42,41 @@ export const ViewUser = () => {
       setActionLoading(false);
     }
   };
+
   useEffect(() => {
     if (id) {
-      fetchData()
+      fetchData();
     }
-  }, [])
+  }, [id]);
+
   return (
-    <ContentWrapper title="Add Users">
-      <h3 className="pb-3">View Customer</h3>
-      {loading ?
+    <ContentWrapper title="View User">
+      <h3 className="pb-3">View User Profile</h3>
+      {loading ? (
         <Spinner />
-        :
+      ) : (
         <>
-          <div className="detail-card  customer mb-4">
-            <div className="customer-title">
-              <h4 className="f-14 bold grey mb-0">Customer details</h4>
+          <div className="detail-card customer mb-4 border rounded p-4 bg-white">
+            <div className="customer-title mb-3">
+              <h4 className="f-14 bold grey mb-0">User Details</h4>
             </div>
             <div className="add-box">
-              <p className="text-end f-14">
-                Status:
-                {userDetails?.isActive ?
-                  <span className="green semi-bold ml-2">Active</span>
-                  :
-                  <span className="red semi-bold ml-2">Inactive</span>
-                }
-              </p>
               <div className="row align-items-center">
-                <div className="col-12 col-md-4 col-lg-3">
-                  <div className="customer-img">
-                    <img
-                      src={userDetails?.image || customer}
-                      className="customer-icon w-100 rounded-lg"
-                      onError={(e) => {
-                        e.currentTarget.src = customer;
-                      }}
-                    />
-                  </div>
-                </div>
-                <div className="col-12 col-md-8 col-lg-9">
-                  <h5 className="f-20 semi-bold mb-3">{userDetails?.name || 'N/A'}</h5>
-                  <p className="f-16 grey mb-2">
-                    <i className="fa-solid fa-location-dot"></i> {userDetails?.businessLocation || 'Address not provided'}
+                <div className="col-12 col-md-8">
+                  <h5 className="f-24 semi-bold mb-3 text-dark">{userDetails?.name || 'N/A'}</h5>
+                  <p className="f-16 text-muted mb-2">
+                    <i className="fa-solid fa-envelope text-primary mr-2"></i> Email: <strong className="text-dark">{userDetails?.email || 'N/A'}</strong>
                   </p>
-                  <p className="f-16 grey mb-2">
-                    <i className="fa-solid fa-phone"></i> {userDetails?.phone || 'Phone not provided'}
+                  <p className="f-16 text-muted mb-2">
+                    <i className="fa-solid fa-phone text-primary mr-2"></i> Phone: <strong className="text-dark">{(userDetails?.countryCode || "") + (userDetails?.phone || 'N/A')}</strong>
                   </p>
-                  <p className="f-16 grey">
-                    <i className="fa-solid fa-calendar-days"></i> DOB {userDetails?.dob || 'Not provided'}
+                  <p className="f-16 text-muted mb-2">
+                    <i className="fa-solid fa-user text-primary mr-2"></i> Role: <strong className="text-dark">{userDetails?.role || 'N/A'}</strong>
                   </p>
-                  <div className="customer-btns mt-3 d-flex align-items-center gap-4">
+                  <p className="f-16 text-muted mb-3">
+                    <i className="fa-solid fa-location-dot text-primary mr-2"></i> Business Location: <strong className="text-dark">{userDetails?.businessLocation || 'N/A'}</strong>
+                  </p>
+                  <div className="customer-btns mt-3 d-flex align-items-center gap-3">
                     <Button
                       className="light-btn btn-primary"
                       onClick={() => navigate(`/admin/users/${id}/edit`)}
@@ -110,214 +95,77 @@ export const ViewUser = () => {
               </div>
             </div>
           </div>
-          <div className="detail-card view-card customer mb-4">
-            <div className="add-box">
-              <div className="row">
-                <div className="col-12 col-lg-6">
-                  <h4 className="f-18 semi-bold pb-2">User Information</h4>
-                  <div className="row">
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt grey mb-0">Name</p>
-                    </div>
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt bold grey mb-0">{userDetails?.name || 'N/A'}</p>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt grey mb-0">Email Id</p>
-                    </div>
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt bold grey mb-0">{userDetails?.email || 'N/A'}</p>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt grey mb-0">Mobile Number</p>
-                    </div>
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt bold grey mb-0">{userDetails?.phone || 'N/A'}</p>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt grey mb-0">Role</p>
-                    </div>
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt bold grey mb-0">{userDetails?.role || 'N/A'}</p>
-                    </div>
-                  </div>
-                </div>
-                <div className="col-12 col-lg-6">
-                  <h4 className="f-18 semi-bold pb-2">Account Information</h4>
-                  <div className="row">
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt grey mb-0">Email Verified</p>
-                    </div>
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt bold grey mb-0">{userDetails?.isEmailVerified ? 'Yes' : 'No'}</p>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt grey mb-0">Phone Verified</p>
-                    </div>
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt bold grey mb-0">{userDetails?.isPhoneVerified ? 'Yes' : 'No'}</p>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt grey mb-0">Provider</p>
-                    </div>
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt bold grey mb-0">{userDetails?.provider || 'Email'}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className="detail-card view-card customer mb-4">
-            <div className="add-box">
-              <h4 className="f-18 semi-bold pb-2">Identity Verification</h4>
-              <div className="row">
-                <div className="col-12 col-lg-6">
-                  <p className="info-txt grey mb-0">Identity Verified</p>
-                </div>
-                <div className="col-12 col-lg-6">
-                  {userDetails?.isIdentityVerified ?
-                    <span className="green semi-bold">Verified</span>
-                    :
-                    <div className="d-flex align-items-center gap-3">
-                      <span className="red semi-bold">Unverified</span>
-                    </div>
-                  }
-                </div>
-              </div>
-              {userDetails?.identityDocs && userDetails.identityDocs.length > 0 && (
-                <div className="row mt-3">
-                  <div className="col-12">
-                    <p className="info-txt grey mb-2">Identity Documents</p>
-                    <div className="d-flex gap-2 flex-wrap">
-                      {userDetails.identityDocs.map((doc, index) => (
-                        <a href={doc} target="_blank" rel="noreferrer" key={index}>
-                          <img src={doc} alt={`Identity Doc ${index + 1}`} className="img-thumbnail" style={{ height: '100px', width: 'auto', objectFit: 'contain' }} />
-                        </a>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="detail-card view-card customer mb-4">
-            <div className="add-box">
-              <div className="row">
-                <div className="col-12 col-lg-6">
-                  <h4 className="f-18 semi-bold pb-2">Other Information</h4>
-                  <div className="row">
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt grey mb-0">Date Of Birth</p>
-                    </div>
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt bold grey mb-0">{userDetails?.dob || 'N/A'}</p>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt grey mb-0">User Name</p>
-                    </div>
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt bold grey mb-0">{userDetails?.username || 'N/A'}</p>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt grey mb-0">Bio</p>
-                    </div>
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt bold grey mb-0">{userDetails?.bio || 'N/A'}</p>
-                    </div>
-                  </div>
 
+          <div className="detail-card view-card customer mb-4 border rounded p-4 bg-white">
+            <div className="add-box">
+              <div className="row">
+                <div className="col-12 col-lg-6">
+                  <h4 className="f-18 semi-bold pb-2 border-bottom text-dark">User Information</h4>
+                  <div className="row mt-3 mb-2">
+                    <div className="col-6"><p className="info-txt text-muted mb-0">Name</p></div>
+                    <div className="col-6"><p className="info-txt bold text-dark mb-0">{userDetails?.name || 'N/A'}</p></div>
+                  </div>
+                  <div className="row mb-2">
+                    <div className="col-6"><p className="info-txt text-muted mb-0">Email ID</p></div>
+                    <div className="col-6"><p className="info-txt bold text-dark mb-0">{userDetails?.email || 'N/A'}</p></div>
+                  </div>
+                  <div className="row mb-2">
+                    <div className="col-6"><p className="info-txt text-muted mb-0">Mobile Number</p></div>
+                    <div className="col-6"><p className="info-txt bold text-dark mb-0">{userDetails?.phone || 'N/A'}</p></div>
+                  </div>
+                  <div className="row mb-2">
+                    <div className="col-6"><p className="info-txt text-muted mb-0">Role</p></div>
+                    <div className="col-6"><p className="info-txt bold text-dark mb-0">{userDetails?.role || 'N/A'}</p></div>
+                  </div>
                 </div>
                 <div className="col-12 col-lg-6">
-                  <h4 className="f-18 semi-bold pb-2">Address</h4>
-                  <div className="row">
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt grey mb-0">Address</p>
-                    </div>
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt bold grey mb-0">{userDetails?.personalAddress?.addressLine1 || 'N/A'}</p>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt grey mb-0">Country</p>
-                    </div>
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt bold grey mb-0">{userDetails?.personalAddress?.country || 'N/A'}</p>
+                  <h4 className="f-18 semi-bold pb-2 border-bottom text-dark">Account Status</h4>
+                  <div className="row mt-3 mb-2">
+                    <div className="col-6"><p className="info-txt text-muted mb-0">Email Verified</p></div>
+                    <div className="col-6">
+                      <p className="info-txt bold mb-0">
+                        {userDetails?.isEmailVerified ? (
+                          <span className="text-success semi-bold">Yes</span>
+                        ) : (
+                          <span className="text-warning semi-bold">No</span>
+                        )}
+                      </p>
                     </div>
                   </div>
-                  <div className="row">
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt grey mb-0">Suburb</p>
-                    </div>
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt bold grey mb-0">{userDetails?.personalAddress?.suburb || "N/A"}</p>
+                  <div className="row mb-2">
+                    <div className="col-6"><p className="info-txt text-muted mb-0">Active Status</p></div>
+                    <div className="col-6">
+                      <p className="info-txt bold mb-0">
+                        {userDetails?.isActive ? (
+                          <span className="text-success semi-bold">Active</span>
+                        ) : (
+                          <span className="text-danger semi-bold">Inactive</span>
+                        )}
+                      </p>
                     </div>
                   </div>
-                  <div className="row">
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt grey mb-0">Postcode</p>
+                  <div className="row mb-2">
+                    <div className="col-6"><p className="info-txt text-muted mb-0">Blocked Status</p></div>
+                    <div className="col-6">
+                      <p className="info-txt bold mb-0">
+                        {userDetails?.isBlocked ? (
+                          <span className="text-danger semi-bold">Blocked</span>
+                        ) : (
+                          <span className="text-success semi-bold">Allowed</span>
+                        )}
+                      </p>
                     </div>
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt bold grey mb-0">{userDetails?.personalAddress?.postcode || 'N/A'}</p>
-                    </div>
+                  </div>
+                  <div className="row mb-2">
+                    <div className="col-6"><p className="info-txt text-muted mb-0">Join Date</p></div>
+                    <div className="col-6"><p className="info-txt bold text-dark mb-0">{userDetails?.createdAt ? new Date(userDetails.createdAt).toLocaleDateString() : 'N/A'}</p></div>
                   </div>
                 </div>
-
-                {/* <div className="col-12 col-lg-6">
-                  <h4 className="f-18 semi-bold pb-2">Additional Information</h4>
-                  <div className="row">
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt grey mb-0">Business Location</p>
-                    </div>
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt bold grey mb-0">{userDetails?.businessLocation || 'N/A'}</p>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt grey mb-0">Created By Admin</p>
-                    </div>
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt bold grey mb-0">{userDetails?.isCreatedByAdmin ? 'Yes' : 'No'}</p>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt grey mb-0">Account Status</p>
-                    </div>
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt bold grey mb-0">{userDetails?.isBlocked ? 'Blocked' : 'Active'}</p>
-                    </div>
-                  </div>
-                  <div className="row">
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt grey mb-0">Join Date</p>
-                    </div>
-                    <div className="col-12 col-lg-6">
-                      <p className="info-txt bold grey mb-0">{userDetails?.createdAt ? new Date(userDetails.createdAt).toLocaleDateString() : 'N/A'}</p>
-                    </div>
-                  </div>
-                </div> */}
               </div>
             </div>
           </div>
         </>
-      }
+      )}
     </ContentWrapper>
   );
 };

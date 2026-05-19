@@ -15,7 +15,7 @@ export const SalesReport: React.FC<SalesReportProps> = ({ series, categories }) 
             height: 350,
             type: 'area'
         },
-        colors: ['#EB9AA8', '#818CF8'],
+        colors: ['#6366f1', '#818CF8'],
         dataLabels: {
             enabled: false
         },

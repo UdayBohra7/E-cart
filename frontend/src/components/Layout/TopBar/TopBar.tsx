@@ -13,6 +13,7 @@ import MoreIcon from "@mui/icons-material/MoreVert";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useLogout } from "@/lib/auth";
+import bell from "@/assets/belll.svg";
 
 export default function TopBar({
   toggled,
@@ -124,7 +125,27 @@ export default function TopBar({
             <Box
               sx={{ display: { xs: "none", md: "flex" }, alignItems: "center" }}
             >
-              <Typography>Admin User</Typography>
+              <IconButton
+                size="large"
+                aria-label="show notifications"
+                color="inherit"
+                sx={{ mr: 2, position: "relative" }}
+              >
+                <img src={bell} alt="Notifications" style={{ width: "20px", height: "20px" }} />
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 12,
+                    right: 12,
+                    width: 7,
+                    height: 7,
+                    borderRadius: "50%",
+                    backgroundColor: "#ef4444",
+                    border: "1px solid #ffffff",
+                  }}
+                />
+              </IconButton>
+              <Typography sx={{ fontWeight: 500, color: "#323a46" }}>Admin User</Typography>
               <IconButton
                 size="large"
                 edge="end"
@@ -133,11 +154,32 @@ export default function TopBar({
                 aria-haspopup="true"
                 onClick={handleProfileMenuOpen}
                 color="inherit"
+                sx={{ ml: 0.5 }}
               >
-                <ArrowDropDownIcon />
+                <ArrowDropDownIcon sx={{ color: "#5d7186" }} />
               </IconButton>
             </Box>
-            <Box sx={{ display: { xs: "flex", md: "none" } }}>
+            <Box sx={{ display: { xs: "flex", md: "none" }, alignItems: "center" }}>
+              <IconButton
+                size="large"
+                aria-label="show notifications"
+                color="inherit"
+                sx={{ mr: 1, position: "relative" }}
+              >
+                <img src={bell} alt="Notifications" style={{ width: "20px", height: "20px" }} />
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 12,
+                    right: 12,
+                    width: 7,
+                    height: 7,
+                    borderRadius: "50%",
+                    backgroundColor: "#ef4444",
+                    border: "1px solid #ffffff",
+                  }}
+                />
+              </IconButton>
               <IconButton
                 size="large"
                 aria-label="show more"
@@ -146,7 +188,7 @@ export default function TopBar({
                 onClick={handleMobileMenuOpen}
                 color="inherit"
               >
-                <MoreIcon />
+                <MoreIcon sx={{ color: "#5d7186" }} />
               </IconButton>
             </Box>
           </Toolbar>

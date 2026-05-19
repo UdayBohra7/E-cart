@@ -3,13 +3,17 @@ import { Button } from "@/components/Elements";
 import Table from "@/components/Elements/Table/Table";
 import ContentWrapper from "@/components/Layout/ContentWrapper";
 import { Link, useNavigate } from "react-router-dom";
-import { getCategories, Category } from "@/features/admin/apis/category";
-import { useQuery } from "@tanstack/react-query";
+import { getCategories, deleteCategory, Category } from "@/features/admin/apis/category";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import moment from "moment";
+import { toast } from "sonner";
+import edit from "@/assets/edit.svg";
+import dele from "@/assets/del.svg";
 
 export const CategoryList = () => {
     const navigate = useNavigate();
+    const queryClient = useQueryClient();
     const { data: categories, isLoading } = useQuery({
         queryKey: ["categories"],
         queryFn: getCategories,
@@ -33,6 +37,18 @@ export const CategoryList = () => {
         entry?.description?.toLowerCase()?.includes(debouncedSearchQuery.toLowerCase())
     ) || [];
 
+    const handleDeleteClick = async (id: string) => {
+        if (!confirm("Are you sure you want to delete this category?")) return;
+        try {
+            await deleteCategory(id);
+            toast.success("Category deleted successfully");
+            queryClient.invalidateQueries({ queryKey: ["categories"] });
+        } catch (error: any) {
+            console.error("Error deleting category:", error);
+            toast.error(error?.response?.data?.message || "Failed to delete category");
+        }
+    };
+
     const columns = [
         {
             id: "name",
@@ -49,31 +65,20 @@ export const CategoryList = () => {
             ),
         },
         {
-            id: "createdAt",
-            header: "Created At",
-            cell: (row: Category) => moment(row.createdAt).format("YYYY-MM-DD"),
-        },
-        {
-            id: "updatedAt",
-            header: "Updated At",
-            cell: (row: Category) => moment(row.updatedAt).format("YYYY-MM-DD"),
-        },
-        {
             id: "actions",
             header: "Action",
             cell: (row: Category) => (
                 <div className="table-actions d-flex gap-2 align-items-center">
-                    {/* View - assuming just edit for now, or if view is needed we can add it. 
-                        Roles has both view and edit. Categories usually just edit. 
-                        User asked for "make the table and edit ui same as other use icons".
-                        I'll add the edit icon link.
-                    */}
-                    {/* <Link to={`/admin/categories/${row._id}`} className="border-0 bg-transparent p-0">
-                        <img src={view} className="table-view" />
-                    </Link> */}
                     <Link to={`/admin/categories/${row._id}/edit`} className="border-0 bg-transparent p-0">
-                        <i className="fa-regular fa-pen-to-square text-dark"></i>
+                        <img src={edit} className="table-view" />
                     </Link>
+                    <button
+                        onClick={() => handleDeleteClick(row._id)}
+                        className="border-0 bg-transparent p-0 cursor-pointer"
+                        title="Delete Category"
+                    >
+                        <img src={dele} className="table-view" />
+                    </button>
                 </div>
             ),
         },

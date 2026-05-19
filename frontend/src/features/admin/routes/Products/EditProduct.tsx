@@ -34,8 +34,8 @@ export const EditProduct = () => {
   const fetchProduct = async () => {
     if (!id) return;
     try {
-      const {data} = await getProductById(id);
-      setProduct(data);
+      const response = await getProductById(id);
+      setProduct(response);
       // setFormData({
       //   name: productData.name || "",
       //   designerName: productData.designerName || "",

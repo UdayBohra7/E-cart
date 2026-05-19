@@ -10,7 +10,20 @@ const createUser = catchAsync(async (req, res) => {
 });
 
 const getUsers = catchAsync(async (req, res) => {
-  const filter = pick(req.query, ['name', 'role']);
+  const filter: any = {};
+  if (req.query.role) {
+    filter.role = req.query.role.toString().toUpperCase();
+  }
+  if (req.query.name) {
+    filter.name = { contains: req.query.name.toString() };
+  }
+  if (req.query.search) {
+    const searchString = req.query.search.toString();
+    filter.OR = [
+      { name: { contains: searchString } },
+      { email: { contains: searchString } },
+    ];
+  }
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
   const result = await userService.queryUsers(filter, options);
   res.send(result);

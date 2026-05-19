@@ -1,0 +1,42 @@
+<svg width="100%" viewBox="0 0 680 440" role="img" xmlns="http://www.w3.org/2000/svg">
+  <title>Suvesa clothing brand logo light blue edition</title>
+  <desc>Suvesa luxury fashion logo with geometric diamond emblem on a light background with blue primary color</desc>
+
+  <defs>
+    <style>
+      .bg-card { fill: transparent; }
+      .brand { font-family: Georgia, 'Times New Roman', serif; font-size: 56px; font-weight: 400; letter-spacing: 18px; fill: #ffffff; }
+      .sub { font-family: Georgia, 'Times New Roman', serif; font-size: 11px; letter-spacing: 7px; fill: #7B6FD0; font-weight: 400; }
+    </style>
+  </defs>
+
+  <rect x="40" y="20" width="600" height="400" rx="4" class="bg-card"/>
+  <rect x="60" y="40" width="560" height="360" rx="2" fill="none" stroke="#4F39F6" stroke-width="0.5" opacity="0.25"/>
+  <rect x="68" y="48" width="544" height="344" rx="1" fill="none" stroke="#4F39F6" stroke-width="0.3" opacity="0.15"/>
+
+  <g transform="translate(340, 168)">
+    <polygon points="0,-68 46,-20 0,28 -46,-20" fill="#EBE8FE" stroke="#4F39F6" stroke-width="1.2"/>
+    <polygon points="0,-52 34,-20 0,12 -34,-20" fill="none" stroke="#4F39F6" stroke-width="0.5" opacity="0.4"/>
+    <line x1="0" y1="-68" x2="0" y2="-52" stroke="#4F39F6" stroke-width="0.6" opacity="0.5"/>
+    <line x1="46" y1="-20" x2="34" y2="-20" stroke="#4F39F6" stroke-width="0.6" opacity="0.5"/>
+    <line x1="0" y1="28" x2="0" y2="12" stroke="#4F39F6" stroke-width="0.6" opacity="0.5"/>
+    <line x1="-46" y1="-20" x2="-34" y2="-20" stroke="#4F39F6" stroke-width="0.6" opacity="0.5"/>
+    <path d="M -16,-36 C -16,-44 16,-44 16,-28 C 16,-18 -16,-16 -16,-6 C -16,8 16,6 16,-2"
+          fill="none" stroke="#4F39F6" stroke-width="2.4" stroke-linecap="round"/>
+    <circle cx="0" cy="-20" r="2.2" fill="#4F39F6" opacity="0.3"/>
+    <line x1="-8" y1="-42" x2="8" y2="-42" stroke="#4F39F6" stroke-width="0.8" opacity="0.45"/>
+    <line x1="-8" y1="2" x2="8" y2="2" stroke="#4F39F6" stroke-width="0.8" opacity="0.45"/>
+  </g>
+
+  <text x="340" y="280" text-anchor="middle" class="brand">SUVESA</text>
+
+  <line x1="140" y1="304" x2="228" y2="304" stroke="#4F39F6" stroke-width="0.6" opacity="0.5"/>
+  <circle cx="340" cy="304" r="2.5" fill="#4F39F6" opacity="0.7"/>
+  <line x1="452" y1="304" x2="540" y2="304" stroke="#4F39F6" stroke-width="0.6" opacity="0.5"/>
+
+  <text x="340" y="330" text-anchor="middle" class="sub">HOUSE OF FASHION</text>
+
+  <line x1="140" y1="352" x2="248" y2="352" stroke="#4F39F6" stroke-width="0.3" opacity="0.2"/>
+  <circle cx="340" cy="352" r="1.5" fill="#4F39F6" opacity="0.25"/>
+  <line x1="432" y1="352" x2="540" y2="352" stroke="#4F39F6" stroke-width="0.3" opacity="0.2"/>
+</svg>

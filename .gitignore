@@ -49,6 +49,10 @@ out/
 .env.production.local
 .env.local
 
+# folders
+uploads/*
+
+
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 .parcel-cache

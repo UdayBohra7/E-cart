@@ -46,6 +46,19 @@ export const ViewProduct = () => {
   if (loading) return <Spinner />;
   if (!product) return <div>Product not found</div>;
 
+  let parsedImages: string[] = [];
+  if (product.images) {
+    try {
+      if (product.images.startsWith('[')) {
+        parsedImages = JSON.parse(product.images);
+      } else {
+        parsedImages = product.images.split(',');
+      }
+    } catch (e) {
+      parsedImages = [product.images];
+    }
+  }
+
   return (
     <ContentWrapper title="View Product">
       <h3 className="pb-3">Product Details</h3>
@@ -55,26 +68,30 @@ export const ViewProduct = () => {
           <h4 className="f-14 bold grey mb-0">Product Information</h4>
         </div>
         <div className="add-box">
-          <div className="row align-items-center">
-            <div className="col-12 col-md-4 col-lg-3">
+          <div className="row">
+            <div className="col-12 col-md-4 col-lg-3 mb-3">
               <div className="product-img">
                 <img
-                  src={product.images?.[0] || '/placeholder.jpg'}
+                  src={parsedImages[0] || '/placeholder.jpg'}
                   className="w-100 rounded-lg"
-                  style={{ height: '200px', objectFit: 'cover' }}
+                  style={{ height: '220px', objectFit: 'cover' }}
+                  alt={product.name}
                 />
               </div>
             </div>
             <div className="col-12 col-md-8 col-lg-9">
-              <h5 className="f-20 semi-bold mb-3">{product.name}</h5>
-              <p className="f-16 grey mb-2">
-                <i className="fa-solid fa-tag"></i> Category: {product.category?.name || 'N/A'}
+              <h5 className="f-24 semi-bold mb-3 text-dark">{product.name}</h5>
+              <p className="f-16 text-muted mb-2">
+                <i className="fa-solid fa-tag text-primary mr-2"></i> Category: <strong className="text-dark">{product.category?.name || 'N/A'}</strong>
               </p>
-              <p className="f-16 grey mb-2">
-                <i className="fa-solid fa-user"></i> Designer: {product.designerName || 'N/A'}
+              <p className="f-16 text-muted mb-2">
+                <i className="fa-solid fa-dollar-sign text-primary mr-2"></i> Price: <strong className="text-dark">${product.price || '0.00'}</strong>
               </p>
-              <p className="f-16 grey mb-2">
-                <i className="fa-solid fa-dollar-sign"></i> Price: ${product.sellingPrice || 'N/A'}
+              <p className="f-16 text-muted mb-2">
+                <i className="fa-solid fa-boxes-stacked text-primary mr-2"></i> Stock: <strong className="text-dark">{product.stock !== undefined ? product.stock : 0}</strong>
+              </p>
+              <p className="f-16 text-muted mb-3">
+                <i className="fa-solid fa-calendar-days text-primary mr-2"></i> Created: <span className="text-dark">{new Date(product.createdAt).toLocaleDateString()}</span>
               </p>
               <div className="d-flex gap-3 mt-3">
                 <Button 
@@ -97,74 +114,36 @@ export const ViewProduct = () => {
       </div>
 
       <div className="detail-card view-card customer mb-4">
-        <div className="add-box">
-          <div className="row">
-            <div className="col-12 col-lg-6">
-              <h4 className="f-18 semi-bold pb-2">Basic Information</h4>
-              <div className="row mb-2">
-                <div className="col-6"><p className="info-txt grey mb-0">Name</p></div>
-                <div className="col-6"><p className="info-txt bold grey mb-0">{product.name}</p></div>
-              </div>
-              <div className="row mb-2">
-                <div className="col-6"><p className="info-txt grey mb-0">Category</p></div>
-                <div className="col-6"><p className="info-txt bold grey mb-0">{product.category?.name || 'N/A'}</p></div>
-              </div>
-              <div className="row mb-2">
-                <div className="col-6"><p className="info-txt grey mb-0">Designer</p></div>
-                <div className="col-6"><p className="info-txt bold grey mb-0">{product.designerName || 'N/A'}</p></div>
-              </div>
-              <div className="row mb-2">
-                <div className="col-6"><p className="info-txt grey mb-0">Listing Type</p></div>
-                <div className="col-6"><p className="info-txt bold grey mb-0">{product.listingType}</p></div>
-              </div>
+        <div className="add-box p-4">
+          <h4 className="f-18 semi-bold pb-2 border-bottom text-dark">Product Images</h4>
+          {parsedImages.length > 0 ? (
+            <div className="row mt-3 g-3">
+              {parsedImages.map((imgUrl, index) => (
+                <div key={index} className="col-6 col-md-4 col-lg-3">
+                  <div className="border rounded p-1 bg-white">
+                    <img 
+                      src={imgUrl} 
+                      alt={`Product Image ${index + 1}`} 
+                      className="w-100 rounded" 
+                      style={{ height: '150px', objectFit: 'contain' }} 
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
-            <div className="col-12 col-lg-6">
-              <h4 className="f-18 semi-bold pb-2">Pricing & Shipping</h4>
-              <div className="row mb-2">
-                <div className="col-6"><p className="info-txt grey mb-0">Selling Price</p></div>
-                <div className="col-6"><p className="info-txt bold grey mb-0">${product.sellingPrice || 'N/A'}</p></div>
-              </div>
-              <div className="row mb-2">
-                <div className="col-6"><p className="info-txt grey mb-0">Shipping Options</p></div>
-                <div className="col-6"><p className="info-txt bold grey mb-0">{product.shippingOptions}</p></div>
-              </div>
-              <div className="row mb-2">
-                <div className="col-6"><p className="info-txt grey mb-0">Owner</p></div>
-                <div className="col-6"><p className="info-txt bold grey mb-0">{product.owner?.name || 'N/A'}</p></div>
-              </div>
-              <div className="row mb-2">
-                <div className="col-6"><p className="info-txt grey mb-0">Created Date</p></div>
-                <div className="col-6"><p className="info-txt bold grey mb-0">{new Date(product.createdAt).toLocaleDateString()}</p></div>
-              </div>
-            </div>
-          </div>
+          ) : (
+            <p className="text-muted mt-2">No images uploaded for this product.</p>
+          )}
         </div>
       </div>
 
       {product.description && (
         <div className="detail-card view-card customer mb-4">
-          <div className="add-box">
-            <h4 className="f-18 semi-bold pb-2">Description</h4>
-            <p className="grey">{product.description}</p>
-          </div>
-        </div>
-      )}
-
-      {product.variants && product.variants.length > 0 && (
-        <div className="detail-card view-card customer mb-4">
-          <div className="add-box">
-            <h4 className="f-18 semi-bold pb-2">Variants</h4>
-            <div className="row">
-              {product.variants.map((variant: any, index: number) => (
-                <div key={index} className="col-12 col-md-6 mb-3">
-                  <div className="border rounded p-3">
-                    <h6 className="semi-bold">{variant.type}</h6>
-                    <p className="mb-1">Values: {Array.isArray(variant.value) ? variant.value.join(', ') : variant.value}</p>
-                    {variant.sizingCountry && <p className="mb-0">Sizing Country: {variant.sizingCountry}</p>}
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="add-box p-4">
+            <h4 className="f-18 semi-bold pb-2 border-bottom text-dark">Description</h4>
+            <p className="text-secondary mt-2" style={{ whiteSpace: 'pre-wrap', lineHeight: '1.6' }}>
+              {product.description}
+            </p>
           </div>
         </div>
       )}

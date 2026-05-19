@@ -4,7 +4,7 @@ import ContentWrapper from "@/components/Layout/ContentWrapper";
 import { useUsers } from "../apis/user-query";
 import { Button } from "@/components/Elements";
 import view from "@/assets/view.svg";
-import edit from "@/assets/editnew.png";
+import edit from "@/assets/edit.svg";
 import block from "@/assets/block.svg";
 import { User } from "@/features/admin/apis/types/user";
 import { Link, useNavigate } from "react-router-dom";
@@ -22,7 +22,7 @@ export const Users = () => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const { data, isLoading, refetch } = useUsers({
     filters: {
-      role: 'user',
+      role: 'USER',
       search: debouncedSearchQuery,
       limit: 10,
       page: currentPage,
@@ -48,7 +48,7 @@ export const Users = () => {
     {
       header: "Name",
       id: "name",
-      cell: (row: User) => row?.name,
+      cell: (row: User) => row?.name || "-",
     },
     {
       header: "Email ID",
@@ -56,32 +56,27 @@ export const Users = () => {
       cell: (row: User) => row.email,
     },
     {
-      header: "Country Code",
-      id: "countryCode",
-      cell: (row: User) => row?.countryCode || "-",
-    },
-    {
       header: "Phone Number",
       id: "phone",
-      cell: (row: User) => row?.phone,
+      cell: (row: User) => (row?.countryCode || "") + (row?.phone || "-"),
     },
     {
-      header: "Address",
-      id: "address",
-      cell: (row: User) => (row.personalAddress?.country && row?.personalAddress?.state) ? row?.personalAddress?.state + ", " + row.personalAddress?.country : "Not Completed",
+      header: "Role",
+      id: "role",
+      cell: (row: User) => row?.role || "-",
     },
     {
       header: "Business Location",
       id: "location",
-      cell: (row: User) => <p className="text-center">{row?.businessLocation || "-"}</p>,
+      cell: (row: User) => row?.businessLocation || "-",
     },
     {
       header: "Status",
       id: "status",
-      cell: (row: User) => row?.isActive ? (
-        <div className="d-flex items-center">Active</div>
-      ) : (
-        <div className="d-flex items-center">Inactive</div>
+      cell: (row: User) => (
+        <span className={`badge ${row?.isBlocked ? 'bg-danger' : 'bg-success'}`}>
+          {row?.isBlocked ? 'Blocked' : 'Active'}
+        </span>
       ),
     },
     {
@@ -137,7 +132,7 @@ export const Users = () => {
           </div> */}
         <div className="recent-orders table-card bg-white rounded-lg">
           <div className="table-header p-3 d-flex justify-content-between align-items-center">
-            <h4 className="f-16 semi-bold">Renter List</h4>
+            <h4 className="f-16 semi-bold">Users List</h4>
               <Button
                 onClick={() => navigate("add")}
                 className="light-btn">

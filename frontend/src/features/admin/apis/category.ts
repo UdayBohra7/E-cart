@@ -1,5 +1,12 @@
 import { axios } from '@/lib/axios';
 
+export interface Category {
+    id: number;
+    _id: string;
+    name: string;
+    description?: string;
+}
+
 const transformCategory = (category: any) => ({
     ...category,
     _id: category.id.toString(),

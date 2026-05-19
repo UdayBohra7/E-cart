@@ -18,7 +18,7 @@ import product from "@/assets/product.svg";
 const themes = {
   light: {
     sidebar: {
-      backgroundColor: "#262D34",
+      backgroundColor: "#0f172a",
       color: "#9097A7",
       fontSize: "15px",
     },
@@ -86,11 +86,11 @@ export const SidebarComponent = ({
         color: themes.light.menu.disabled.color,
       },
       "&:hover": {
-        backgroundColor: "transparent",
+        backgroundColor: "rgba(255, 255, 255, 0.05)",
         color: "#fff",
       },
       [`&.ps-active`]: {
-        backgroundColor: "transparent",
+        backgroundColor: "rgba(99, 102, 241, 0.15)",
         color: "#fff",
       },
     },
