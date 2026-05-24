@@ -86,7 +86,8 @@ const createCheckoutSession = async (
       receipt: `receipt_order_${order.id}`,
     });
   } catch (error: any) {
-    // If Razorpay fails, delete the pending order
+    // If Razorpay fails, delete the pending order items and order to prevent foreign key constraint violation
+    await prisma.orderItem.deleteMany({ where: { orderId: order.id } });
     await prisma.order.delete({ where: { id: order.id } });
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, `Razorpay Order creation failed: ${error.message}`);
   }
