@@ -67,14 +67,19 @@ model Category {
 }
 
 model Order {
-  id          Int         @id @default(autoincrement())
-  userId      Int
-  user        User        @relation(fields: [userId], references: [id])
-  totalAmount Decimal     @db.Decimal(10, 2)
-  status      OrderStatus @default(PENDING)
-  items       OrderItem[]
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @updatedAt
+  id                 Int         @id @default(autoincrement())
+  userId             Int
+  user               User        @relation(fields: [userId], references: [id])
+  totalAmount        Decimal     @db.Decimal(10, 2)
+  status             OrderStatus @default(PENDING)
+  razorpayOrderId    String?     @unique
+  razorpayPaymentId  String?     @unique
+  shippingAddress    String?     @db.Text
+  shippingCity       String?
+  shippingPostalCode String?
+  items              OrderItem[]
+  createdAt          DateTime    @default(now())
+  updatedAt          DateTime    @updatedAt
 
   @@map("orders")
 }
