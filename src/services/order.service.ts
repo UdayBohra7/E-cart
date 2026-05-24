@@ -19,16 +19,14 @@ interface CheckoutItem {
 }
 
 /**
- * Create checkout session (Razorpay Order) and PENDING order
+ * Create checkout session (Razorpay Order)
  * @param {number} userId
  * @param {CheckoutItem[]} items
- * @param {object} shippingInfo
  * @returns {Promise<any>}
  */
 const createCheckoutSession = async (
   userId: number,
-  items: CheckoutItem[],
-  shippingInfo: { address: string; city: string; postalCode: string }
+  items: CheckoutItem[]
 ) => {
   const productIds = items.map((item) => item.productId);
 
@@ -44,64 +42,28 @@ const createCheckoutSession = async (
   }
 
   let totalAmount = 0;
-  const orderItemsData = items.map((item) => {
+  for (const item of items) {
     const product = dbProducts.find((p) => p.id === item.productId)!;
     if (product.stock < item.quantity) {
       throw new ApiError(httpStatus.BAD_REQUEST, `Product ${product.name} has insufficient stock`);
     }
     const price = Number(product.price);
     totalAmount += price * item.quantity;
-    return {
-      productId: item.productId,
-      quantity: item.quantity,
-      price: product.price,
-    };
-  });
+  }
 
-  // 2. Create Order in database in PENDING status
-  const order = await prisma.order.create({
-    data: {
-      userId,
-      totalAmount,
-      status: OrderStatus.PENDING,
-      shippingAddress: shippingInfo.address,
-      shippingCity: shippingInfo.city,
-      shippingPostalCode: shippingInfo.postalCode,
-      items: {
-        create: orderItemsData.map((oi) => ({
-          productId: oi.productId,
-          quantity: oi.quantity,
-          price: oi.price,
-        })),
-      },
-    },
-  });
-
-  // 3. Create Razorpay Order
+  // 2. Create Razorpay Order
   let rzpOrder: any;
   try {
     rzpOrder = await razorpay.orders.create({
       amount: Math.round(totalAmount * 100), // in paise (for INR)
       currency: 'INR',
-      receipt: `receipt_order_${order.id}`,
+      receipt: `receipt_rzp_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
     });
   } catch (error: any) {
-    // If Razorpay fails, delete the pending order items and order to prevent foreign key constraint violation
-    await prisma.orderItem.deleteMany({ where: { orderId: order.id } });
-    await prisma.order.delete({ where: { id: order.id } });
     throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, `Razorpay Order creation failed: ${error.message}`);
   }
 
-  // 4. Update the order with razorpayOrderId
-  const updatedOrder = await prisma.order.update({
-    where: { id: order.id },
-    data: {
-      razorpayOrderId: rzpOrder.id,
-    },
-  });
-
   return {
-    orderId: updatedOrder.id,
     razorpayOrderId: rzpOrder.id,
     amount: rzpOrder.amount,
     currency: rzpOrder.currency,
@@ -111,7 +73,8 @@ const createCheckoutSession = async (
 /**
  * Confirm payment and update order status by verifying signature
  * @param {number} userId
- * @param {number} orderId
+ * @param {CheckoutItem[]} items
+ * @param {object} shippingInfo
  * @param {string} razorpayPaymentId
  * @param {string} razorpayOrderId
  * @param {string} razorpaySignature
@@ -119,30 +82,13 @@ const createCheckoutSession = async (
  */
 const confirmOrder = async (
   userId: number,
-  orderId: number,
+  items: CheckoutItem[],
+  shippingInfo: { address: string; city: string; postalCode: string },
   razorpayPaymentId: string,
   razorpayOrderId: string,
   razorpaySignature: string
 ) => {
-  // 1. Find the order
-  const order = await prisma.order.findUnique({
-    where: { id: orderId },
-    include: { items: { include: { product: true } } },
-  });
-
-  if (!order) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Order not found');
-  }
-
-  if (order.userId !== userId) {
-    throw new ApiError(httpStatus.FORBIDDEN, 'You do not have permission to confirm this order');
-  }
-
-  if (order.status !== OrderStatus.PENDING) {
-    return order; // Already confirmed
-  }
-
-  // 2. Verify signature securely
+  // 1. Verify signature securely
   const body = razorpayOrderId + '|' + razorpayPaymentId;
   const expectedSignature = crypto
     .createHmac('sha256', razorpayKeySecret)
@@ -153,31 +99,86 @@ const confirmOrder = async (
     throw new ApiError(httpStatus.BAD_REQUEST, 'Payment signature verification failed. Possible fraud.');
   }
 
-  // 3. Payment succeeded: update order status to PROCESSING and deduct stock in a transaction
+  // 2. Check if the order has already been created (Idempotency)
+  const existingOrder = await prisma.order.findUnique({
+    where: { razorpayOrderId },
+    include: { items: { include: { product: true } } },
+  });
+
+  if (existingOrder) {
+    if (existingOrder.userId !== userId) {
+      throw new ApiError(httpStatus.FORBIDDEN, 'You do not have permission to access this order');
+    }
+    return existingOrder;
+  }
+
+  // 3. Payment succeeded: check stock, deduct stock, and create Order inside a transaction
   const updatedOrder = await prisma.$transaction(async (tx) => {
+    const productIds = items.map((item) => item.productId);
+    const dbProducts = await tx.product.findMany({
+      where: {
+        id: { in: productIds },
+      },
+    });
+
+    if (dbProducts.length !== items.length) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'One or more products in cart do not exist');
+    }
+
+    let totalAmount = 0;
+    const orderItemsData = [];
+
     // Deduct stock for each item
-    for (const item of order.items) {
-      const currentStock = item.product.stock;
-      if (currentStock < item.quantity) {
+    for (const item of items) {
+      const product = dbProducts.find((p) => p.id === item.productId)!;
+      if (product.stock < item.quantity) {
         throw new ApiError(
           httpStatus.BAD_REQUEST,
-          `Insufficient stock for product ${item.product.name} to complete order.`
+          `Insufficient stock for product ${product.name} to complete order.`
         );
       }
+
       await tx.product.update({
         where: { id: item.productId },
         data: {
           stock: { decrement: item.quantity },
         },
       });
+
+      const price = Number(product.price);
+      totalAmount += price * item.quantity;
+      orderItemsData.push({
+        productId: item.productId,
+        quantity: item.quantity,
+        price: product.price,
+      });
     }
 
-    // Update order status and save payment ID
-    return tx.order.update({
-      where: { id: orderId },
+    // Create the Order in database in PROCESSING status
+    return tx.order.create({
       data: {
+        userId,
+        totalAmount,
         status: OrderStatus.PROCESSING,
-        razorpayPaymentId: razorpayPaymentId,
+        shippingAddress: shippingInfo.address,
+        shippingCity: shippingInfo.city,
+        shippingPostalCode: shippingInfo.postalCode,
+        razorpayOrderId,
+        razorpayPaymentId,
+        items: {
+          create: orderItemsData.map((oi) => ({
+            productId: oi.productId,
+            quantity: oi.quantity,
+            price: oi.price,
+          })),
+        },
+      },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
       },
     });
   });
@@ -185,7 +186,29 @@ const confirmOrder = async (
   return updatedOrder;
 };
 
+/**
+ * Get user orders with items and product details
+ * @param {number} userId
+ * @returns {Promise<Order[]>}
+ */
+const getOrders = async (userId: number): Promise<Order[]> => {
+  return prisma.order.findMany({
+    where: { userId },
+    include: {
+      items: {
+        include: {
+          product: true,
+        },
+      },
+    },
+    orderBy: {
+      createdAt: 'desc',
+    },
+  });
+};
+
 export default {
   createCheckoutSession,
   confirmOrder,
+  getOrders,
 };

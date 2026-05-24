@@ -8,5 +8,6 @@ const router = express.Router();
 
 router.post('/checkout', auth(), validate(orderValidation.checkout), orderController.createCheckoutSession);
 router.post('/confirm', auth(), validate(orderValidation.confirm), orderController.confirmOrder);
+router.get('/', auth(), orderController.getOrders);
 
 export default router;

@@ -47,10 +47,22 @@ const deleteUser = catchAsync(async (req, res) => {
   res.status(httpStatus.NO_CONTENT).send();
 });
 
+const getMe = catchAsync(async (req, res) => {
+  res.send(req.user);
+});
+
+const updateMe = catchAsync(async (req, res) => {
+  const user = req.user as any;
+  const updatedUser = await userService.updateUserById(user.id, req.body);
+  res.send(updatedUser);
+});
+
 export default {
   createUser,
   getUsers,
   getUser,
   updateUser,
   deleteUser,
+  getMe,
+  updateMe,
 };

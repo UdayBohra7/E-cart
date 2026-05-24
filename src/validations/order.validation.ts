@@ -11,15 +11,23 @@ const checkout = {
       )
       .min(1)
       .required(),
-    shippingAddress: Joi.string().required(),
-    shippingCity: Joi.string().required(),
-    shippingPostalCode: Joi.string().required(),
   }),
 };
 
 const confirm = {
   body: Joi.object().keys({
-    orderId: Joi.number().integer().required(),
+    items: Joi.array()
+      .items(
+        Joi.object().keys({
+          productId: Joi.number().integer().required(),
+          quantity: Joi.number().integer().min(1).required(),
+        })
+      )
+      .min(1)
+      .required(),
+    shippingAddress: Joi.string().required(),
+    shippingCity: Joi.string().required(),
+    shippingPostalCode: Joi.string().required(),
     razorpayPaymentId: Joi.string().required(),
     razorpayOrderId: Joi.string().required(),
     razorpaySignature: Joi.string().required(),
