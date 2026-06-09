@@ -15,6 +15,9 @@ import ApiError from './utils/ApiError';
 
 const app = express();
 
+// Enable 'trust proxy' so Express reads X-Forwarded-For headers from Railway proxy
+app.set('trust proxy', 1);
+
 if (config.env !== 'test') {
   app.use(morgan.successHandler);
   app.use(morgan.errorHandler);
