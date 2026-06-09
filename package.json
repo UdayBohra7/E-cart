@@ -4,9 +4,9 @@
   "description": "E-commerce backend with Prisma and MySQL",
   "main": "src/index.ts",
   "scripts": {
-    "start": "node dist/index.js",
+    "start": "npx prisma db push && node dist/index.js",
     "dev": "nodemon src/index.ts",
-    "build": "tsc",
+    "build": "prisma generate && tsc",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prisma:generate": "prisma generate",
