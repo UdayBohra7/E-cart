@@ -63,7 +63,7 @@ const frontendBuildPath = path.join(__dirname, '../frontend/dist');
 app.use(express.static(frontendBuildPath));
 
 // For all other routes, send back index.html for React SPA client-side routing
-app.get('(.*)', (req, res, next) => {
+app.get('/*any', (req, res, next) => {
   if (req.path.startsWith('/v1') || req.path.startsWith('/uploads')) {
     return next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
   }
