@@ -1,5 +1,6 @@
 import express from 'express';
 import path from 'path';
+import fs from 'fs';
 import helmet from 'helmet';
 import compression from 'compression';
 import cors from 'cors';
@@ -25,6 +26,7 @@ if (config.env !== 'test') {
 
 // set security HTTP headers
 app.use(helmet({
+  contentSecurityPolicy: false,
   crossOriginResourcePolicy: { policy: "cross-origin" }
 }));
 
@@ -56,9 +58,21 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 // v1 api routes
 app.use('/v1', routes);
 
-// send back a 404 error for any unknown api request
-app.use((req, res, next) => {
-  next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
+// Serve frontend static files
+const frontendBuildPath = path.join(__dirname, '../frontend/dist');
+app.use(express.static(frontendBuildPath));
+
+// For all other routes, send back index.html for React SPA client-side routing
+app.get('(.*)', (req, res, next) => {
+  if (req.path.startsWith('/v1') || req.path.startsWith('/uploads')) {
+    return next(new ApiError(httpStatus.NOT_FOUND, 'Not found'));
+  }
+  const indexPath = path.join(frontendBuildPath, 'index.html');
+  if (fs.existsSync(indexPath)) {
+    res.sendFile(indexPath);
+  } else {
+    next(new ApiError(httpStatus.NOT_FOUND, 'Frontend build not found. Please run the build script.'));
+  }
 });
 
 // convert error to ApiError, if needed

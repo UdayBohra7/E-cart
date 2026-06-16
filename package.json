@@ -6,7 +6,7 @@
   "scripts": {
     "start": "npx prisma db push && node dist/index.js",
     "dev": "nodemon src/index.ts",
-    "build": "prisma generate && tsc",
+    "build": "prisma generate && tsc && npm install --prefix frontend && cross-env VITE_API_URL=/v1 npm run build --prefix frontend",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "prisma:generate": "prisma generate",

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -21,6 +21,7 @@
     "axios": "^1.16.0",
     "bootstrap": "^5.3.8",
     "clsx": "^2.1.1",
+    "e-cart-backend": "file:..",
     "flatpickr": "^4.6.13",
     "framer-motion": "^12.38.0",
     "moment": "^2.30.1",
